@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const UserSchema = new Schema(
     {
-        id: {
+        userId: {
             type: String,
             required: true,
         },
@@ -17,7 +17,7 @@ const UserSchema = new Schema(
             type: String,
             required: true,
         },
-        name: {
+        userName: {
             type: String,
             required: true,
         },
