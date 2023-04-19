@@ -1,13 +1,12 @@
-const { Schema } = require("mongoose");
+const { Schema } = require('mongoose');
 
 const ProductSchema = new Schema({
-    
     title: {
         type: String,
         required: true,
     },
     author: {
-        type: Number,
+        type: String,
         required: true,
     },
     price: {
