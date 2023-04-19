@@ -1,3 +1,4 @@
-node_modules/
-dbhost/
-.env/
+node_modules
+.env
+
+
