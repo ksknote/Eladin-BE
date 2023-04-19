@@ -13,11 +13,14 @@ connection.connect((err) => {
 
 app.use(express.urlencoded({ extended: true }));
 
+
 app.get('/', (req, res) => {
-    connection.query('SELECT * FROM user', (err, results, field) => {
-        console.log(results);
-        res.send('Completed Server Setting!');
-    });
+    res.send('Root page');
+});
+
+
+app.listen(8080, () => {
+    console.log('server is running...');
 });
 
 module.exports = app;
