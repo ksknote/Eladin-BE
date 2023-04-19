@@ -4,24 +4,32 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const env = require('./envconfig');
 const { connectToDatabase } = require('./db/db');
+const { insertDummyUsers } = require('./db/userDummyData');
+const { insertDummyProducts } = require('./db/productDummyData');
 
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/authRouter');
+const orderRouter = require('./routes/orderRouter');
+const productRouter = require('./routes/productRouter');
 
 const port = Number(env.PORT || 3000);
 
 app.use(cors());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 connectToDatabase()
-    .then((db) => {
+    .then(async (db) => {
         app.use('/', indexRouter);
 
+        await insertDummyUsers();
+        await insertDummyProducts();
+
         app.listen(port, () => {
-            console.log('포트 :', env.PORT);
-            console.log('데이터베이스 호스트: ', env.DB_HOST);
-            console.log('데이터베이스 이름:', env.DB_NAME);
+            console.log('PORT:', env.PORT);
+            console.log('DB_HOST:', env.DB_HOST);
+            console.log('DB_NAME:', env.DB_NAME);
             console.log(`Server is running on port ${port}`);
         });
     })
