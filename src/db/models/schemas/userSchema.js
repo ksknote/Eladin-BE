@@ -1,4 +1,6 @@
-const { Schema } = require("mongoose");
+const { Schema } = require('mongoose');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const UserSchema = new Schema(
     {
@@ -9,6 +11,7 @@ const UserSchema = new Schema(
         password: {
             type: String,
             required: true,
+            minlength: 8,
         },
         email: {
             type: String,
@@ -20,9 +23,17 @@ const UserSchema = new Schema(
         },
         role: {
             type: String,
-            enum: ["user", "admin"],
-            default: "user",
+            enum: ['user', 'admin'],
+            default: 'user',
         },
+        tokens: [
+            {
+                token: {
+                    type: String,
+                    required: true,
+                },
+            },
+        ],
     },
     {
         timestamps: true,
