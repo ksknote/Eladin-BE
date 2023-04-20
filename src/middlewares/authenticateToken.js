@@ -13,7 +13,7 @@ const authenticateToken = (req, res, next) => {
         if (err) {
             return res
                 .status(403)
-                .json({ message: 'Invalid token. Please provide a valid token.' });
+                .json({ message: '토큰이 유효하지 않습니다. 토큰을 확인해주세요.' });
         }
         req.user = decodedToken;
         next();
