@@ -3,11 +3,11 @@ const { Product } = require('../db/index');
 // 관리자
 const productService = {
     // 책 전체 조회
-    async getALLProducts(req, res) {
+    async getAllProducts(req, res) {
         try {
-            const findALLProducts = await Product.find({});
+            const foundAllProducts = await Product.find({});
 
-            res.status(201).json(findALLProducts);
+            res.status(201).json(foundAllProducts);
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: '책 조회 실패' });
@@ -29,7 +29,7 @@ const productService = {
     },
 
     // [관리자 전용] 책 추가하기
-    async addProduct(req, res) {
+    async createProduct(req, res) {
         const { productId, title, author, price, category, introduction } = req.body;
         const createInfo = { productId, title, author, price, category, introduction };
 

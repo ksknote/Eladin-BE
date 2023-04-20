@@ -3,11 +3,11 @@ const router = Router();
 
 const productService = require('../services/productService');
 
-router.get('/', productService.getALLProducts); // 책 전체 조회
+router.get('/', productService.getAllProducts); // 책 전체 조회
 
 router.get('/:productId', productService.getProduct); // 책 단일 조회
 
-router.post('/', productService.addProduct); // [관리자 전용] 책 추가하기
+router.post('/', productService.createProduct); // [관리자 전용] 책 추가하기
 
 router.put('/:productId', productService.updateProduct); // [관리자 전용] 책 정보 수정
 
