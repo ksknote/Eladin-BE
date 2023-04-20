@@ -6,6 +6,7 @@ const env = require('./envconfig');
 const { connectToDatabase } = require('./db/db');
 const { insertDummyUsers } = require('./db/userDummyData');
 const { insertDummyProducts } = require('./db/productDummyData');
+const { errorHandlerMiddleware } = require('./middlewares/errorHandler');
 
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/authRouter');
@@ -41,3 +42,4 @@ connectToDatabase()
 app.use('/auth', authRouter);
 app.use('/orders', orderRouter);
 app.use('/products', productRouter);
+app.use(errorHandlerMiddleware);
