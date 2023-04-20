@@ -1,4 +1,5 @@
 const { User } = require('../db/index');
+const { AppError } = require('../middlewares/errorHandler');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET, BCRYPT_SALT_ROUNDS, expiresInSec } = require('../envconfig.js');
@@ -9,15 +10,25 @@ const hashPassword = async (password) => {
     return hashedPassword;
 };
 
-const signUp = async (req, res) => {
+const signUp = async (req, res, next) => {
+    if (req.method !== 'POST') {
+        return next(new AppError(400, '잘못된 요청입니다.'));
+    }
     const { userId, password, email, userName } = req.body;
     if (!userId || !password || !email || !userName) {
-        return res.status(400).json({ message: '모든사항을 입력해주세요.' });
+        return next(new AppError(400, '모든사항을 입력해주세요.'));
     }
+
     try {
-        const foundUser = await User.findOne({ userId });
+        const foundUser = await User.findOne({ $or: [{ userId }, { email }, { userName }] });
         if (foundUser) {
-            return res.status(400).json({ message: '이미 존재하는 아이디입니다' });
+            if (foundUser.userId === userId) {
+                return next(new AppError(400, '이미 존재하는 아이디입니다'));
+            } else if (foundUser.email === email) {
+                return next(new AppError(400, '이미 존재하는 이메일입니다'));
+            } else if (foundUser.userName === userName) {
+                return next(new AppError(400, '이미 존재하는 유저네임입니다'));
+            }
         }
 
         const hashedPassword = await hashPassword(password);
@@ -33,37 +44,83 @@ const signUp = async (req, res) => {
         const token = jwt.sign({ userId: newUser.userId }, JWT_SECRET, {
             expiresIn: expiresInSec,
         });
-
         res.status(201).json({ message: '회원가입 성공', token });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: '회원가입 실패' });
+        next(new AppError(500, '회원가입 실패'));
     }
 };
 
-const logIn = async (req, res) => {
-    const { userId, password } = req.body;
+const logIn = async (req, res, next) => {
+    if (req.method !== 'POST') return next(new AppError(405, '잘못된 요청입니다.'));
+    const { userId, password, clientToken } = req.body;
     if (!userId) {
-        return res.status(400).json({ message: '아이디를 입력해주세요.' });
+        return next(new AppError(400, '아이디를 입력해주세요.'));
     }
     if (!password) {
-        return res.status(400).json({ message: '비밀번호를 입력해주세요.' });
+        return next(new AppError(400, '비밀번호를 입력해주세요.'));
     }
     try {
-        const { userId, password } = req.body;
         const foundUser = await User.findOne({ userId });
         if (!foundUser) {
-            return res.status(400).json({ message: '존재하지 않는 아이디입니다.' });
+            return next(new AppError(400, '존재하지 않는 아이디입니다.'));
         }
         const isMatch = await bcrypt.compare(password, foundUser.password);
         if (!isMatch) {
-            return res.status(400).json({ message: '비밀번호가 일치하지 않습니다.' });
+            return next(new AppError(400, '비밀번호가 일치하지 않습니다.'));
+        }
+        // 미들웨어에선 JWT토큰의 유효성을 검사
+        // 로그인 함수에서는 사용자가 올바른 토큰을 가지고 있는지 검사
+        if (clientToken) {
+            try {
+                const decoded = jwt.verify(clientToken, JWT_SECRET);
+                if (decoded.userId !== foundUser.userId) {
+                    return next(new AppError(400, '토큰이 일치하지 않습니다.'));
+                }
+            } catch (error) {
+                return next(new AppError(400, '유효하지 않은 토큰입니다.'));
+            }
         }
         res.status(200).json({ message: '로그인 성공' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: '로그인 실패' });
+        next(new AppError(500, '로그인 실패'));
     }
 };
 
-module.exports = { signUp, logIn };
+const logOut = async (req, res, next) => {
+    if (req.method !== 'DELETE') {
+        return next(new AppError(405, '잘못된 요청입니다.'));
+    }
+    try {
+        res.clearCookie('token');
+        res.status(200).json({ message: '로그아웃 성공' });
+    } catch (error) {
+        console.error(error);
+        next(new AppError(500, '로그아웃 실패'));
+    }
+};
+
+const getUserInfo = async (req, res, next) => {
+    if (req.method !== 'GET') {
+        return next(new AppError(405, '잘못된 요청입니다.'));
+    }
+    try {
+        const { userId } = req.body;
+        const user = await User.findOne({ userId });
+        if (!user) {
+            return next(new AppError(404, '사용자 정보를 찾을 수 없습니다'));
+        }
+        const userInfo = {
+            userId: user.userId,
+            email: user.email,
+            userName: user.userName,
+        };
+        res.status(200).json({ message: '사용자 정보 조회 성공', data: userInfo });
+    } catch (error) {
+        console.error(error);
+        next(new AppError(500, '사용자 정보 조회 실패'));
+    }
+};
+
+module.exports = { signUp, logIn, logOut, getUserInfo };
