@@ -15,9 +15,9 @@ const productService = {
 
     // 특정 책 조회
     async getProduct(req, res, next) {
-        const { productId } = req.params;
-
         try {
+            const { productId } = req.params;
+
             const foundProduct = await Product.findOne({ productId });
             if (!foundProduct) {
                 return next(new AppError(404, '책을 찾을 수 없습니다.'));
@@ -31,10 +31,10 @@ const productService = {
 
     // [관리자 전용] 책 추가하기
     async createProduct(req, res, next) {
-        const { productId, title, author, price, category, introduction } = req.body;
-        const createInfo = { productId, title, author, price, category, introduction };
-
         try {
+            const { productId, title, author, price, category, introduction } = req.body;
+            const createInfo = { productId, title, author, price, category, introduction };
+
             const createdProduct = await Product.create(createInfo);
             res.status(201).json({ message: '책 추가 성공', data: createdProduct });
         } catch (error) {
@@ -45,11 +45,11 @@ const productService = {
 
     // [관리자 전용] 책 정보 수정
     async updateProduct(req, res, next) {
-        const { productId } = req.params;
-        const { title, author, price, category, introduction } = req.body;
-        const updateInfo = { title, author, price, category, introduction };
-
         try {
+            const { productId } = req.params;
+            const { title, author, price, category, introduction } = req.body;
+            const updateInfo = { title, author, price, category, introduction };
+
             const updatedProduct = await Product.updateOne({ productId }, updateInfo, {
                 new: true,
             });
@@ -65,9 +65,9 @@ const productService = {
 
     // [관리자 전용] 책 정보 삭제
     async deleteProduct(req, res, next) {
-        const { productId } = req.params;
-
         try {
+            const { productId } = req.params;
+
             const foundProduct = await Product.findOne({ productId });
             if (!foundProduct) {
                 return next(new AppError(404, '책을 찾을 수 없습니다.'));
