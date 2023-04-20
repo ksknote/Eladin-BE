@@ -1,10 +1,9 @@
 const { Schema } = require('mongoose');
-// pdf >> 주문 번호, 배송지 정보(수령자, 핸드폰번호, 주소, 우편번호), 배송 방법, 배송 메모 등
 
-// [주문 목록 페이지] 각 주문 정보 >> 주문한 책, 주문 수량, 책 가격
+// [각 주문 정보]
 const orderItemSchema = new Schema({
-    product: {
-        type: String,
+    productId: {
+        type: Schema.Types.ObjectId,
         ref: 'Product',
         required: true,
     },
@@ -12,36 +11,61 @@ const orderItemSchema = new Schema({
         type: Number,
         required: true,
     },
+    // 책 가격(API에 할인 가격이랑 원가랑 나눠져있음)
     price: {
         type: Number,
         required: true,
     },
 });
 
-// [주문 완료 페이지] 총 주문 정보 >> 주문한 사용자, 주문한 책들, 주문 총액, 우편번호, 배송지 주소, 핸드폰 번호
+// [총 주문 정보] 주문 정보, 배송지 정보, 배송 상태
 const orderSchema = new Schema(
     {
-        user: {
+        userId: {
             type: Schema.Types.ObjectId,
             ref: 'User',
             required: true,
         },
-        items: [orderItemSchema], // 하나의 주문 내에 여러 상품이 존재할 때 'items: orderItem' 스키마 배열로 조회
-        totalPrice: {
-            type: Number,
-            required: true,
+        items: [orderItemSchema],
+        orderInfo: {
+            // 주문 번호
+            orderNumber: {
+                type: String,
+                required: true,
+            },
+            // 주문 총액
+            totalPrice: {
+                type: Number,
+                required: true,
+            },
         },
-        postCode: {
-            type: Number,
-            required: true,
+        deliveryInfo: {
+            // 수령자 이름
+            receiverName: {
+                type: String,
+                required: true,
+            },
+            // 수령자 연락처
+            receiverPhone: {
+                type: Number,
+                required: true,
+            },
+            // 수령자 주소
+            address: {
+                type: String,
+                required: true,
+            },
+            // 수령자 우편 번호
+            postCode: {
+                type: Number,
+                required: true,
+            },
         },
-        address: {
+        // 배송 상태
+        deliveryStatus: {
             type: String,
-            required: true,
-        },
-        phoneNumber: {
-            type: Number,
-            required: true,
+            enum: ['pending', 'processing', 'delivered'],
+            default: 'pending',
         },
     },
     {
