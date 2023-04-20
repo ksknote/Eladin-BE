@@ -3,10 +3,10 @@ const { AppError } = require('../middlewares/errorHandler');
 // 관리자
 const productService = {
     // 책 전체 조회
-    async getALLProducts(req, res, next) {
+    async getAllProducts(req, res, next) {
         try {
-            const findALLProducts = await Product.find({});
-            res.status(200).json({ message: '모든 책 조회 성공', data: findALLProducts });
+            const foundAllProducts = await Product.find({});
+            res.status(200).json({ message: '모든 책 조회 성공', data: foundAllProducts });
         } catch (error) {
             console.error(error);
             next(new AppError(500, '모든 책 조회 실패'));
@@ -30,14 +30,13 @@ const productService = {
     },
 
     // [관리자 전용] 책 추가하기
-    // [관리자 전용] 책 추가하기
-    async addProduct(req, res, next) {
+    async createProduct(req, res, next) {
         const { productId, title, author, price, category, introduction } = req.body;
         const createInfo = { productId, title, author, price, category, introduction };
 
         try {
-            const addProduct = await Product.create(createInfo);
-            res.status(201).json({ message: '책 추가 성공', data: addProduct });
+            const createdProduct = await Product.create(createInfo);
+            res.status(201).json({ message: '책 추가 성공', data: createdProduct });
         } catch (error) {
             console.error(error);
             next(new AppError(500, '책 추가 실패'));
