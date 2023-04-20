@@ -13,22 +13,22 @@ const orderService = {
 
     // [사용자 전용] 주문 추가 - 추가할 때 마다 새로운 주문번호 생성
     async createOrder(req, res) {
-        const { userId, items, deliveryInfo } = req.body;
-
-        const orderNumber = this.getOrderNumber();
-        const totalPrice = this.getTotalPrice(items);
-
-        const createInfo = {
-            userId,
-            items,
-            deliveryInfo,
-            orderInfo: {
-                orderNumber,
-                totalPrice,
-            },
-        };
-
         try {
+            const { userId, items, deliveryInfo } = req.body;
+
+            const orderNumber = this.getOrderNumber();
+            const totalPrice = this.getTotalPrice(items);
+
+            const createInfo = {
+                userId,
+                items,
+                deliveryInfo,
+                orderInfo: {
+                    orderNumber,
+                    totalPrice,
+                },
+            };
+
             const createdOrder = await Order.create({ createInfo });
 
             console.log('주문 추가 내용 : ', createdOrder);
@@ -46,10 +46,10 @@ const orderService = {
     // [관리자 전용] 배송상태 수정
     // root : 관리자 전체 주문내역 페이지
     async updateDeliveryStatus(req, res) {
-        const { orderNumber } = req.params.orderInfo;
-        const { deliveryStatus } = req.body;
-
         try {
+            const { orderNumber } = req.params.orderInfo;
+            const { deliveryStatus } = req.body;
+
             const updatedOrder = await Order.findByIdAndUpdate(
                 { orderNumber },
                 { deliveryStatus },
@@ -66,13 +66,13 @@ const orderService = {
     // [사용자 전용] 주문 정보 수정 - 배송 시작 전까지 주문내역, 배송지정보 수정
     // root : 사용자 주문 내역 페이지
     async updateDeliveryInfo(req, res) {
-        const { orderNumber } = req.params.orderInfo;
-        const { items, deliveryInfo, deliveryStatus } = req.body;
-
-        const newOrderNumber = this.getOrderNumber();
-        const newTotalPrice = this.getTotalPrice();
-
         try {
+            const { orderNumber } = req.params.orderInfo;
+            const { items, deliveryInfo, deliveryStatus } = req.body;
+
+            const newOrderNumber = this.getOrderNumber();
+            const newTotalPrice = this.getTotalPrice();
+
             if (deliveryStatus === 'preparing') {
                 const updatedOrder = await Order.findByIdAndUpdate(
                     { orderNumber },
@@ -112,9 +112,9 @@ const orderService = {
 
     // [사용자 전용] 주문 조회 - 전체 주문내역 조회
     async getOrdersByUserId(req, res) {
-        const { userId } = req.parmas;
-
         try {
+            const { userId } = req.parmas;
+
             const foundOrders = await Order.find({ userId });
 
             res.status(201).json(foundOrders);
@@ -138,9 +138,9 @@ const orderService = {
 
     // [사용자 전용] 주문 취소
     async cancelOrder(req, res) {
-        const { orderNumber } = req.params.orderInfo;
-
         try {
+            const { orderNumber } = req.params.orderInfo;
+
             const foundOrder = await Order.find({ orderNumber });
             if (foundOrder.deliveryStatus === 'pending') {
                 await foundOrder.deleteOne({ orderNumber });
@@ -155,9 +155,9 @@ const orderService = {
 
     // [관리자 전용] 주문 삭제
     async deleteOrder(req, res) {
-        const { orderNumber } = req.params.orderInfo;
-
         try {
+            const { orderNumber } = req.params.orderInfo;
+
             await Order.deleteOne({ orderNumber });
 
             res.status(201).json({ message: '주문 삭제 성공' });
