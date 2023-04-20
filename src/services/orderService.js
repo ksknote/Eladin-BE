@@ -33,10 +33,7 @@ const orderService = {
 
             console.log('주문 추가 내용 : ', createdOrder);
 
-            res.status(201).json({ message: '주문 추가 성공' });
-
-            req.session.valid = createInfo.orderInfo; // 세션으로 주문정보 전달
-            res.redirect('/order-complete');
+            res.status(201).json({ message: '주문 추가 성공', data: createdOrder });
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: '주문 추가 실패' });
@@ -56,7 +53,7 @@ const orderService = {
                 { new: true }
             );
 
-            res.status(201).json(updatedOrder);
+            res.status(201).json({ message: '배송상태 수정 성공', data: updatedOrder });
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: '배송상태 수정 실패' });
@@ -87,7 +84,7 @@ const orderService = {
                     { new: true }
                 );
 
-                res.status(201).json(updatedOrder);
+                res.status(201).json({ message: '주문정보 수정 성공', data: updatedOrder });
             }
         } catch (error) {
             console.log(error);
@@ -96,14 +93,13 @@ const orderService = {
     },
 
     // [사용자 전용] 주문 완료 - 현재 주문내역 조회
-    async orderCompleted(req, res) {
-        const { orderNumber } = req.session.valid; // 주문 추가에서 받아온 세션 값
-        req.session.valid = null; // 세션 제거
-
+    async getCurrentOrder(req, res) {
         try {
+            const { orderNumber } = req.params.orderInfo;
+
             const foundOrder = await Order.findOne({ orderNumber }, { items: 0 }); // 책 정보 제외
 
-            res.status(201).json(foundOrder);
+            res.status(201).json({ message: '현재 주문내역 조회 성공', data: foundOrder });
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: '현재 주문내역 조회 실패' });
@@ -117,7 +113,7 @@ const orderService = {
 
             const foundOrders = await Order.find({ userId });
 
-            res.status(201).json(foundOrders);
+            res.status(201).json({ message: '사용자 전체 주문내역 조회 성공', data: foundOrders });
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: '사용자 전체 주문내역 조회 실패' });
@@ -129,7 +125,10 @@ const orderService = {
         try {
             const foundAllOrders = await Order.find({});
 
-            res.status(201).json(foundAllOrders);
+            res.status(201).json({
+                message: '관리자 전체 주문내역 조회 성공',
+                data: foundAllOrders,
+            });
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: '관리자 전체 주문내역 조회 실패' });
