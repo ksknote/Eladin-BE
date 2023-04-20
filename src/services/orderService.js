@@ -11,12 +11,12 @@ const orderService = {
         return items.reduce((acc, product) => acc + product.price);
     },
 
-    // [사용자 전용] 주문 추가 - 추가할 때 마다 새로운 주문번호 생성(주문 번호로 필터링)
+    // [사용자 전용] 주문 추가 - 추가할 때 마다 새로운 주문번호 생성
     async createOrder(req, res) {
         const { userId, items, deliveryInfo } = req.body;
 
         const orderNumber = this.getOrderNumber();
-        const totalPrice = this.getTotalPrice();
+        const totalPrice = this.getTotalPrice(items);
 
         const createInfo = {
             userId,
@@ -29,14 +29,14 @@ const orderService = {
         };
 
         try {
-            const createOrder = await Order.create({ createInfo });
+            const createdOrder = await Order.create({ createInfo });
 
-            console.log('주문 추가 내용 : ', createOrder);
+            console.log('주문 추가 내용 : ', createdOrder);
 
             res.status(201).json({ message: '주문 추가 성공' });
 
             req.session.valid = createInfo.orderInfo; // 세션으로 주문정보 전달
-            res.redirect('/주문완료 페이지');
+            res.redirect('/order-complete');
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: '주문 추가 실패' });
@@ -158,7 +158,7 @@ const orderService = {
         const { orderNumber } = req.params.orderInfo;
 
         try {
-            await Order.findByIdAndDelete({ orderNumber });
+            await Order.deleteOne({ orderNumber });
 
             res.status(201).json({ message: '주문 삭제 성공' });
         } catch (error) {
