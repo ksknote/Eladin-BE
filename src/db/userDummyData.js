@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { User } = require('./index');
+const { User } = require('./models/index');
 
 const dummyUsers = [
     {

@@ -1,4 +1,4 @@
-const { Product } = require('./index');
+const { Product } = require('./models/index');
 
 const dummyProducts = [
     {

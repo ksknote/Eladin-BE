@@ -1,4 +1,4 @@
-const { User } = require('../db/index');
+const { User } = require('../db/models/index');
 const { AppError } = require('../middlewares/errorHandler');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -81,7 +81,7 @@ const logIn = async (req, res, next) => {
         const token = jwt.sign({ userId: newUser.userId }, JWT_SECRET, {
             expiresIn: expiresInSec,
         });
-        res.status(200).json({ message: '로그인 성공'});
+        res.status(200).json({ message: '로그인 성공' });
     } catch (error) {
         console.error(error);
         next(new AppError(500, '로그인 실패'));
