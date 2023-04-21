@@ -73,20 +73,6 @@ const logIn = async (req, res, next) => {
             return next(new AppError(400, '비밀번호가 일치하지 않습니다.'));
         }
 
-        const authHeader = req.headers['authorization'];
-        const clientToken = authHeader && authHeader.split(' ')[1];
-
-        if (clientToken) {
-            try {
-                const decoded = jwt.verify(clientToken, JWT_SECRET);
-                if (decoded.userId === userId) {
-                    return res.status(200).json({ message: '이미 로그인되어 있습니다.' });
-                }
-            } catch (error) {
-                // 에러 처리를 하지 않고, 유효하지 않은 토큰인 경우 새 토큰을 발급하는 과정을 진행
-            }
-        }
-
         const accessToken = jwt.sign({ userId: foundUser.userId }, ACCESS_TOKEN_SECRET, {
             expiresIn: ACCESS_TOKEN_EXPIRES_IN,
         });
@@ -94,15 +80,16 @@ const logIn = async (req, res, next) => {
         const refreshToken = jwt.sign({ userId: foundUser.userId }, REFRESH_TOKEN_SECRET, {
             expiresIn: REFRESH_TOKEN_EXPIRES_IN,
         });
-        console.log(accessToken);
-        console.log(refreshToken);
 
+        res.setHeader('Authorization', `Bearer ${accessToken}`);
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+        });
         res.status(200).json({
             message: '로그인 성공',
-            accessToken: accessToken,
-            refreshToken: refreshToken,
+            // accessToken: accessToken,
+            // refreshToken: refreshToken,
         });
-        res.status(200).json({ message: '로그인 성공' });
     } catch (error) {
         console.error(error);
         next(new AppError(500, '로그인 실패'));
@@ -153,7 +140,7 @@ const logOut = async (req, res, next) => {
         return next(new AppError(405, '잘못된 요청입니다.'));
     }
     try {
-        res.clearCookie('token');
+        res.clearCookie('tokens.access_token');
         res.status(200).json({ message: '로그아웃 성공' });
     } catch (error) {
         console.error(error);
