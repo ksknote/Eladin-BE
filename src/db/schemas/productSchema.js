@@ -26,6 +26,10 @@ const ProductSchema = new Schema({
         type: String,
         required: true,
     },
+    publisher: {
+        type: String,
+        required: true,
+    },
 });
 
 module.exports = ProductSchema;
