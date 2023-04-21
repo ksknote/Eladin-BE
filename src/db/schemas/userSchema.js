@@ -28,14 +28,14 @@ const UserSchema = new Schema(
             enum: ['user', 'admin'],
             default: 'user',
         },
-        tokens: [
-            {
-                token: {
-                    type: String,
-                    required: true,
-                },
+        tokens: {
+            accessToken: {
+                type: String,
             },
-        ],
+            refreshToken: {
+                type: String,
+            },
+        },
     },
     {
         timestamps: true,
