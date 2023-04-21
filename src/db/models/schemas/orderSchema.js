@@ -47,7 +47,7 @@ const orderSchema = new Schema(
             },
             // 수령자 연락처
             receiverPhone: {
-                type: Number,
+                type: String,
                 required: true,
             },
             // 수령자 주소
@@ -57,7 +57,7 @@ const orderSchema = new Schema(
             },
             // 수령자 우편 번호
             postCode: {
-                type: Number,
+                type: String,
                 required: true,
             },
         },
