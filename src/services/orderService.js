@@ -16,8 +16,10 @@ const orderService = {
         try {
             const { userId, items, deliveryInfo } = req.body;
 
-            const orderNumber = this.getOrderNumber();
-            const totalPrice = this.getTotalPrice(items);
+            // const orderNumber = this.getOrderNumber();
+            // const totalPrice = this.getTotalPrice(items);
+            const orderNumber = Math.floor(Math.random() * 900000) + 100000;
+            const totalPrice = items.reduce((acc, product) => acc + product.price, 0);
 
             const createInfo = {
                 userId,
@@ -29,7 +31,7 @@ const orderService = {
                 },
             };
 
-            const createdOrder = await Order.create({ createInfo });
+            const createdOrder = await Order.create(createInfo);
 
             console.log('주문 추가 내용 : ', createdOrder);
 
@@ -44,11 +46,11 @@ const orderService = {
     // root : 관리자 전체 주문내역 페이지
     async updateDeliveryStatus(req, res) {
         try {
-            const { orderNumber } = req.params.orderInfo;
+            const { orderNumber } = req.params;
             const { deliveryStatus } = req.body;
 
             const updatedOrder = await Order.findByIdAndUpdate(
-                { orderNumber },
+                orderNumber,
                 { deliveryStatus },
                 { new: true }
             );
@@ -67,8 +69,8 @@ const orderService = {
             const { orderNumber } = req.params.orderInfo;
             const { items, deliveryInfo, deliveryStatus } = req.body;
 
-            const newOrderNumber = this.getOrderNumber();
-            const newTotalPrice = this.getTotalPrice();
+            const newOrderNumber = Math.floor(Math.random() * 900000) + 100000;
+            const newTotalPrice = items.reduce((acc, product) => acc + product.price, 0);
 
             if (deliveryStatus === 'preparing') {
                 const updatedOrder = await Order.findByIdAndUpdate(
@@ -109,7 +111,7 @@ const orderService = {
     // [사용자 전용] 주문 조회 - 전체 주문내역 조회
     async getOrdersByUserId(req, res) {
         try {
-            const { userId } = req.parmas;
+            const { userId } = req.params;
 
             const foundOrders = await Order.find({ userId });
 
