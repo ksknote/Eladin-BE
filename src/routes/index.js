@@ -2,9 +2,8 @@ const { Router } = require('express');
 const router = Router();
 
 
-
 router.get('/', (req, res) => {
-    // 여기서 오픈 api 데이터 받아와서 보내줘야 할듯!!
+    // 프로덕트 등록한거 전부다 조회해서 뿌려주기!!
     res.send('This is the root page');
 });
 

@@ -41,10 +41,7 @@ const signUp = async (req, res, next) => {
 
         await newUser.save();
 
-        const token = jwt.sign({ userId: newUser.userId }, JWT_SECRET, {
-            expiresIn: expiresInSec,
-        });
-        res.status(201).json({ message: '회원가입 성공', token });
+        res.status(201).json({ message: '회원가입 성공' });
     } catch (error) {
         console.error(error);
         next(new AppError(500, '회원가입 실패'));
@@ -81,7 +78,10 @@ const logIn = async (req, res, next) => {
                 return next(new AppError(400, '유효하지 않은 토큰입니다.'));
             }
         }
-        res.status(200).json({ message: '로그인 성공' });
+        const token = jwt.sign({ userId: newUser.userId }, JWT_SECRET, {
+            expiresIn: expiresInSec,
+        });
+        res.status(200).json({ message: '로그인 성공'});
     } catch (error) {
         console.error(error);
         next(new AppError(500, '로그인 실패'));

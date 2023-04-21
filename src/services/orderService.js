@@ -1,4 +1,4 @@
-const { Order } = require('../db/index');
+const { Order } = require('../db/models/index');
 
 const orderService = {
     // 임의 6자리 주문번호

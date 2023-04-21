@@ -1,4 +1,4 @@
-const { Product } = require('../db/index');
+const { Product } = require('../db/models/index');
 const { AppError } = require('../middlewares/errorHandler');
 // 관리자
 const productService = {
@@ -54,7 +54,7 @@ const productService = {
             const updatedProduct = await Product.updateOne({ productId }, updateInfo, {
                 new: true,
             });
-            if (updatedProduct.n === 0) {
+            if (updatedProduct.nModified === 0) {
                 return next(new AppError(404, '책을 찾을 수 없습니다.'));
             }
             res.status(201).json({ message: '책 정보 수정 성공', data: updatedProduct });
