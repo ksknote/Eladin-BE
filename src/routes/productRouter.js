@@ -6,14 +6,14 @@ const productService = require('../services/productService');
 // [사용자] 카테고리 조회 - 카테고리 목록 조회
 router.get('/categoryList', productService.getCategoryList); // (메인 페이지)
 
-// [관리자] 카테고리 추가 - 카테고리 추가 >>> 프론트?
-router.post();
+// [관리자] 카테고리 등록 - 카테고리 추가 >>> 프론트?
+// router.post((RES,REQ )= >{
 
 // [관리자] 카테고리 수정 - 카테고리 수정 (해당하는 모든 책에 반영)
 router.put('/category', productService.updateCategory); // (카테고리 관리 페이지)
 
 // [관리자] 카테고리 삭제 - 카테고리 삭제 >>> 프론트?
-router.delete();
+// router.delete();
 
 // [관리자] 상품 추가 - 책 정보 추가
 router.post('/', productService.createProduct); // (상품 관리 페이지)
