@@ -4,15 +4,13 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const env = require('./envconfig');
 const { connectToDatabase } = require('./db/db');
-const { insertDummyUsers } = require('./db/userDummyData');
-const { insertDummyProducts } = require('./db/productDummyData');
+const { insertDummyOrders, insertDummyUsers, insertDummyProducts } = require('./db/dummyDatas.js');
 const { errorHandlerMiddleware } = require('./middlewares/errorHandler');
 
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/authRouter');
 const orderRouter = require('./routes/orderRouter');
 const productRouter = require('./routes/productRouter');
-
 const port = Number(env.PORT || 3000);
 
 app.use(cors());
@@ -24,6 +22,7 @@ connectToDatabase()
     .then(async (db) => {
         app.use('/', indexRouter);
 
+        await insertDummyOrders();
         await insertDummyUsers();
         await insertDummyProducts();
 

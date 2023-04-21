@@ -2,7 +2,13 @@ const { User } = require('../db/models/index');
 const { AppError } = require('../middlewares/errorHandler');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET, BCRYPT_SALT_ROUNDS, expiresInSec } = require('../envconfig.js');
+const {
+    BCRYPT_SALT_ROUNDS,
+    ACCESS_TOKEN_SECRET,
+    REFRESH_TOKEN_SECRET,
+    ACCESS_TOKEN_EXPIRES_IN,
+    REFRESH_TOKEN_EXPIRES_IN,
+} = require('../envconfig.js');
 
 const hashPassword = async (password) => {
     const saltRounds = parseInt(BCRYPT_SALT_ROUNDS);
@@ -50,7 +56,7 @@ const signUp = async (req, res, next) => {
 
 const logIn = async (req, res, next) => {
     if (req.method !== 'POST') return next(new AppError(405, '잘못된 요청입니다.'));
-    const { userId, password, clientToken } = req.body;
+    const { userId, password } = req.body;
     if (!userId) {
         return next(new AppError(400, '아이디를 입력해주세요.'));
     }
@@ -66,25 +72,79 @@ const logIn = async (req, res, next) => {
         if (!isMatch) {
             return next(new AppError(400, '비밀번호가 일치하지 않습니다.'));
         }
-        // 미들웨어에선 JWT토큰의 유효성을 검사
-        // 로그인 함수에서는 사용자가 올바른 토큰을 가지고 있는지 검사
+
+        const authHeader = req.headers['authorization'];
+        const clientToken = authHeader && authHeader.split(' ')[1];
+
         if (clientToken) {
             try {
                 const decoded = jwt.verify(clientToken, JWT_SECRET);
-                if (decoded.userId !== foundUser.userId) {
-                    return next(new AppError(400, '토큰이 일치하지 않습니다.'));
+                if (decoded.userId === userId) {
+                    return res.status(200).json({ message: '이미 로그인되어 있습니다.' });
                 }
             } catch (error) {
-                return next(new AppError(400, '유효하지 않은 토큰입니다.'));
+                // 에러 처리를 하지 않고, 유효하지 않은 토큰인 경우 새 토큰을 발급하는 과정을 진행
             }
         }
-        const token = jwt.sign({ userId: newUser.userId }, JWT_SECRET, {
-            expiresIn: expiresInSec,
+
+        const accessToken = jwt.sign({ userId: foundUser.userId }, ACCESS_TOKEN_SECRET, {
+            expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+        });
+
+        const refreshToken = jwt.sign({ userId: foundUser.userId }, REFRESH_TOKEN_SECRET, {
+            expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+        });
+        console.log(accessToken);
+        console.log(refreshToken);
+
+        res.status(200).json({
+            message: '로그인 성공',
+            accessToken: accessToken,
+            refreshToken: refreshToken,
         });
         res.status(200).json({ message: '로그인 성공' });
     } catch (error) {
         console.error(error);
         next(new AppError(500, '로그인 실패'));
+    }
+};
+
+const updateUser = async (req, res, next) => {
+    if (req.method !== 'PATCH') {
+        return next(new AppError(405, '잘못된 요청입니다.'));
+    }
+
+    const { password, email, userName } = req.body;
+    const userId = req.user.userId;
+    try {
+        const foundUser = await User.findOne({ userId });
+
+        if (!foundUser) {
+            return next(new AppError(400, '존재하지 않는 아이디입니다.'));
+        }
+
+        const updateData = {};
+
+        if (password) {
+            updateData.password = await bcrypt.hash(password, 10);
+        }
+
+        if (email) {
+            updateData.email = email;
+        }
+
+        if (userName) {
+            updateData.userName = userName;
+        }
+
+        const updateUser = await User.updateOne({ userId }, { $set: updateData });
+        res.status(200).json({
+            message: '회원정보 수정 성공',
+            data: updateUser,
+        });
+    } catch (error) {
+        console.error(error);
+        next(new AppError(500, '회원정보 수정 실패'));
     }
 };
 
@@ -123,4 +183,4 @@ const getUserInfo = async (req, res, next) => {
     }
 };
 
-module.exports = { signUp, logIn, logOut, getUserInfo };
+module.exports = { signUp, logIn, logOut, getUserInfo, updateUser };
