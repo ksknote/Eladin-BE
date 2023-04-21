@@ -42,7 +42,7 @@ const orderService = {
         }
     },
 
-    // [관리자 전용] 배송상태 수정
+    // [관리자] 주문 수정 - 배송상태 수정
     async updateDeliveryStatus(req, res) {
         try {
             const { orderNumber } = req.params;
@@ -61,7 +61,7 @@ const orderService = {
         }
     },
 
-    // [사용자] 주문 정보 수정 - 배송 시작 전까지 주문 내역, 배송지정보 수정
+    // [사용자] 주문 수정 - 배송 시작 전까지 주문내역, 배송지정보 수정
     async updateDeliveryInfo(req, res) {
         try {
             const { orderNumber } = req.params;

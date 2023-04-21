@@ -6,10 +6,10 @@ const orderService = require('../services/orderService');
 // [사용자] 주문 추가
 router.post('/', orderService.createOrder); // (주문 페이지)
 
-// [관리자] 배송상태 수정
+// [관리자] 주문 수정 - 배송상태 수정
 router.patch('/:orderNumber/delivery-status', orderService.updateDeliveryStatus); // (관리 페이지)
 
-// [사용자] 주문정보 수정 - 배송 시작 전까지 주문 내역, 배송지정보 수정
+// [사용자] 주문 수정 - 배송 시작 전까지 주문내역, 배송지정보 수정
 router.patch('/:orderNumber/delivery-info', orderService.updateDeliveryInfo); // (주문내역 수정 페이지)
 
 // [사용자] 주문 완료 - 현재 주문내역 조회
