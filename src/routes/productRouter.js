@@ -6,7 +6,7 @@ const productService = require('../services/productService');
 // 필드 추가하기
 
 // [사용자] 카테고리 조회 - 카테고리 목록 조회
-router.get('/categoryList', productService.getCategoryList); // (카테고리 목록 페이지)
+router.get('/categories', productService.getCategoryList); // (카테고리 목록 페이지)
 
 // [관리자] 카테고리 추가 - 카테고리 추가 >>> 백에서 해야함
 // router.post();
@@ -30,7 +30,7 @@ router.delete('/:productId', productService.deleteProduct); // (상품 관리 �
 router.get('/', productService.getAllProducts); // (메인 페이지)
 
 // [사용자] 상품 목록 - 카테고리별 책 목록 조회
-// router.get('/:category', productService.getProductByCategory); // (메인 페이지)
+router.get('/:categoryName', productService.getProductByCategory); // (카테고리 관리 페이지)
 
 // [사용자] 상품 상세 - 선택한 책의 상세 정보 조회
 router.get('/:productId', productService.getProductByProductId); // (책 상세 페이지)
