@@ -26,11 +26,26 @@ const ProductSchema = new Schema({
         type: String,
         required: true,
     },
-    // publisher: {
-    //     type: String,
-    //     required: true,
-    // },
+    imgUrl: {
+        type: String,
+        required: true,
+    },
+    bestSeller: {
+        type: Boolean,
+        required: true,
+    },
+    newBook: {
+        type: Boolean,
+        required: true,
+    },
+    recommend: {
+        type: Boolean,
+        required: true,
+    },
+    publisher: {
+        type: String,
+        required: true,
+    },
 });
 
 module.exports = ProductSchema;
-
