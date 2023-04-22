@@ -114,11 +114,13 @@ const productService = {
     // [사용자] 상품 목록 - 카테고리별 책 목록 조회
     async getProductByCategory(req, res, next) {
         try {
-            const { category } = req.params;
+            const { categoryName } = req.params;
 
-            const foundProduct = await Product.findOne({ category });
-            if (!foundProduct) {
-                return next(new AppError(404, `${category} 카테고리 관련 책을 찾을 수 없습니다.`));
+            const foundProduct = await Product.find({ categoryName });
+            if (!foundProduct || foundProduct.length === 0) {
+                return next(
+                    new AppError(404, `${categoryName} 카테고리 관련 책을 찾을 수 없습니다.`)
+                );
             }
             res.status(200).json({ message: '카테고리 관련 책 조회 성공 ', data: foundProduct });
         } catch (error) {
