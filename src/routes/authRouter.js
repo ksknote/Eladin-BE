@@ -11,11 +11,15 @@ router.post('/login', logIn);
 
 router.get('/isAuth', isAccessTokenValid, authenticateUser);
 
+
+// authenticateUser < 주문할떄는 보안에 더 신경 써야해서 넣는게 좋을 듯 .
+
+
 router.patch('/update', isAccessTokenValid, updateUser);
 
 router.get('/me', isAccessTokenValid, getUserInfo);
 
-router.delete('/logout', isAccessTokenValid, logOut);
+router.delete('/logout', logOut);
 
 module.exports = router;
 
