@@ -87,8 +87,11 @@ const logIn = async (req, res, next) => {
         });
         res.status(200).json({
             message: '로그인 성공',
-            userId: foundUser.userId,
-            email: foundUser.email,
+            data: {
+                userId: foundUser.userId,
+                userName: foundUser.userName,
+                email: foundUser.email,
+            },
         });
     } catch (error) {
         console.error(error);
