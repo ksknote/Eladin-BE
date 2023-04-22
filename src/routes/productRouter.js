@@ -12,7 +12,7 @@ router.get('/categories', productService.getCategoryList); // (카테고리 목�
 // router.post();
 
 // [관리자] 카테고리 수정 - 카테고리 수정 (해당하는 모든 책에 반영)
-router.put('/category', productService.updateCategory); // (카테고리 관리 페이지)
+router.patch('/category', productService.updateCategory); // (카테고리 관리 페이지)
 
 // [관리자] 카테고리 삭제 - 카테고리 삭제 >>> 백에서 해야함
 // router.delete();
