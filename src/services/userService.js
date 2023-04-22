@@ -87,8 +87,8 @@ const logIn = async (req, res, next) => {
         });
         res.status(200).json({
             message: '로그인 성공',
-            // accessToken: accessToken,
-            // refreshToken: refreshToken,
+            userId: foundUser.userId,
+            email: foundUser.email,
         });
     } catch (error) {
         console.error(error);
