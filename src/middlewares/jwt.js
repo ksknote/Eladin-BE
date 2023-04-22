@@ -6,29 +6,22 @@ const isAccessTokenValid = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const accessToken = authHeader && authHeader.split(' ')[1];
 
-    if (accessToken == null) {
+    if (!accessToken)
         return res.status(401).json({ message: 'Access denied. Please provide a valid token.' });
-    }
-
     try {
-        const decodedToken = await jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
-        // console.log('@@@@@@@@@@@@@@', decodedToken);
-        req.user = decodedToken;
-        // console.log('@@@@@@@@', req.user);
+        req.user = await jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
         next();
     } catch (err) {
         // access token 이 만료된 경우
         if (err.name === 'TokenExpiredError') {
             const refreshToken = req.cookies.refreshToken;
-            if (refreshToken == null) {
+
+            if (!refreshToken)
                 return res
                     .status(401)
-                    .json({ message: 'Access denied. Please provide a valid token.' });
-            }
-
+                    .json({ message: 'Access denied. Please provide a valid token' });
             try {
                 const decodedRefreshToken = await jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
-
                 const newAccessToken = jwt.sign(
                     { userId: decodedRefreshToken.userId },
                     ACCESS_TOKEN_SECRET,
@@ -59,12 +52,10 @@ const isAccessTokenValid = async (req, res, next) => {
 
 const authenticateUser = async (req, res) => {
     try {
-        const userId = req.user.userId;
-        console.log(userId);
-        const foundUser = await User.findOne({ userId: userId });
-        if (!foundUser) {
-            return res.status(401).json({ message: '사용자를 찾을 수 없습니다.' });
-        }
+        const { userId } = req.user;
+        const foundUser = await User.findOne({ userId });
+        if (!foundUser) return res.status(401).json({ message: '사용자를 찾을 수 없습니다.' });
+
         return res.status(200).json({
             message: '사용자 인증 성공',
         });
