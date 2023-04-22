@@ -4,20 +4,16 @@ const { isAccessTokenValid, authenticateUser } = require('../middlewares/jwt');
 
 const { signUp, logIn, logOut, getUserInfo, updateUser } = require('../services/userService');
 
-router.post('/signup', signUp);
+router.post('/users', signUp);
 
 // 최초로그인 이후부터 jwt토큰 검증 미들웨어를가 작동되어야 함.
 router.post('/login', logIn);
 
-router.get('/isAuth', isAccessTokenValid, authenticateUser);
+router.get('/token', isAccessTokenValid, authenticateUser);
 
+router.patch('/me', isAccessTokenValid, updateUser);
 
-// authenticateUser < 주문할떄는 보안에 더 신경 써야해서 넣는게 좋을 듯 .
-
-
-router.patch('/update', isAccessTokenValid, updateUser);
-
-router.get('/me', isAccessTokenValid, getUserInfo);
+router.get('/users/:id', isAccessTokenValid, getUserInfo);
 
 router.delete('/logout', logOut);
 
