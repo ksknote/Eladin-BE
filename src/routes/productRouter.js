@@ -29,9 +29,11 @@ router.patch('/admin/:productId', productService.updateProduct); // (상품 관�
 router.delete('/admin/:productId', productService.deleteProduct); // (상품 관리 페이지)
 
 // [사용자] 상품 목록 - 전체 책 조회
+// 카테고리 이름만 있는 데이터는 조회 안되게 추가하기
 router.get('/', productService.getAllProducts); // (메인 페이지)
 
 // [사용자] 상품 목록 - 카테고리별 책 목록 조회
+// 카테고리 이름만 있는 데이터는 조회 안되게 추가하기
 router.get('/categories/:category', productService.getProductByCategory); // (카테고리 관리 페이지)
 
 // [사용자] 상품 상세 - 선택한 책의 상세정보 조회
