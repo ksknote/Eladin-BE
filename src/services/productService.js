@@ -17,6 +17,46 @@ const productService = {
     },
 
     // [관리자] 카테고리 추가 - 카테고리 추가
+    async createCategory(req, res, next) {
+        try {
+            const addCategory = req.body.category; // (body로 보낼때 필드 이름 category)
+
+            const randomProductId = Math.floor(Math.random() * 900000) + 100000;
+
+            const createInfo = {
+                productId: randomProductId,
+                title: ' ',
+                author: ' ',
+                price: ' ',
+                category: addCategory,
+                introduction: ' ',
+                imgUrl: ' ',
+                bestSeller: false,
+                newBook: false,
+                recommend: false,
+                publisher: ' ',
+            };
+
+            const createdProduct = await Product.create(createInfo);
+
+            // 얘가 조건이다 다 추가해보자
+            // const productList = await Product.find({
+            //     category: addCategory,
+            //     $or: [
+            //         { title: { $ne: '' } },
+            //         { author: { $ne: '' } },
+            //         { price: { $ne: '' } },
+            //         { imgUrl: { $ne: '' } },
+            //         { publisher: { $ne: '' } },
+            //     ],
+            // });
+
+            res.status(200).json({ message: '카테고리 추가 성공 ', data: addCategory });
+        } catch (error) {
+            console.error(error);
+            next(new AppError(500, '카테고리 추가 실패'));
+        }
+    },
 
     // [관리자] 카테고리 수정 - 카테고리 수정 (해당하는 모든 책에 반영)
     async updateCategory(req, res, next) {
@@ -39,7 +79,23 @@ const productService = {
         }
     },
 
-    // [관리자] 카테고리 삭제 - 카테고리 삭제 >>> 프론트?
+    // [관리자] 카테고리 삭제 - 카테고리 삭제
+    async deleteCategory(req, res, next) {
+        try {
+            const removeCategory = req.body.category; // (body로 보낼때 필드 이름 category)
+
+            const deletedCategory = await Product.deleteMany({ category: removeCategory });
+
+            res.status(200).json({
+                message: '카테고리 삭제 성공 ',
+                data: deletedCategory,
+                removeCategory: removeCategory,
+            });
+        } catch (error) {
+            console.error(error);
+            next(new AppError(500, '카테고리 삭제 실패'));
+        }
+    },
 
     // [관리자] 상품 추가 - 책 정보 추가
     async createProduct(req, res, next) {
@@ -197,9 +253,7 @@ const productService = {
             const foundProduct = await Product.find({ category });
 
             if (!foundProduct || foundProduct.length === 0)
-                return next(
-                    new AppError(404, `'${category}' 카테고리 관련 책을 찾을 수 없습니다.`)
-                );
+                return next(new AppError(404, `${category} 카테고리 관련 책이 존재하지 않습니다.`));
 
             res.status(200).json({ message: '카테고리 관련 책 조회 성공 ', data: foundProduct });
         } catch (error) {
