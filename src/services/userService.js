@@ -79,9 +79,10 @@ const logIn = async (req, res, next) => {
         });
         // res.setHeader('Authorization', `Bearer ${accessToken}`);
         // 만약 HTTPS를 사용한다면, res.cookie() 메서드에 secure: true 옵션을 추가하여 쿠키가 HTTPS로만 전송되도록 설정 가능
-        // res.cookie('refreshToken', refreshToken, {
-        //     httpOnly: true,
-        // });
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+        });
+
         res.status(200).json({
             message: '로그인 성공',
             data: {
@@ -143,7 +144,7 @@ const getUserInfo = async (req, res, next) => {
     if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
 
     try {
-        const { id } = req.query;
+        const { id } = req.params;
         const foundUser = await User.findOne({ userId: id });
         const { userId, email, userName } = foundUser;
         if (!foundUser) return next(new AppError(404, '사용자 정보를 찾을 수 없습니다'));
@@ -154,6 +155,7 @@ const getUserInfo = async (req, res, next) => {
             userName,
         };
         res.status(200).json({ message: '사용자 정보 조회 성공', data: userInfo });
+        console.log("사용자 정보 조회 성공");
     } catch (error) {
         console.error(error);
         next(new AppError(500, '사용자 정보 조회 실패'));
