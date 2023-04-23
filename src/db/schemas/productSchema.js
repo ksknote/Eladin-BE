@@ -13,10 +13,11 @@ const ProductSchema = new Schema({
     author: {
         type: String,
         required: true,
+        default: 'Unknown',
     },
     price: {
         type: Number,
-        required: true,
+        required: false,
     },
     category: {
         type: String,
@@ -24,7 +25,7 @@ const ProductSchema = new Schema({
     },
     introduction: {
         type: String,
-        required: true,
+        required: false,
     },
     imgUrl: {
         type: String,
