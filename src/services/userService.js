@@ -65,7 +65,6 @@ const logIn = async (req, res, next) => {
     }
     try {
         const foundUser = await User.findOne({ userId });
-        const { userId, email, userName } = fondUser;
         if (!foundUser) return next(new AppError(400, '존재하지 않는 아이디입니다.'));
 
         const isMatch = await bcrypt.compare(password, foundUser.password);
@@ -86,9 +85,9 @@ const logIn = async (req, res, next) => {
         res.status(200).json({
             message: '로그인 성공',
             data: {
-                userId,
-                email,
-                userName,
+                userId: foundUser.userId,
+                email: foundUser.email,
+                userName: foundUser.userName,
                 accessToken,
                 refreshToken,
             },
