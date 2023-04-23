@@ -6,9 +6,9 @@ const productService = {
     async getCategoryList(req, res, next) {
         try {
             const foundCategories = await Product.distinct('category');
-            if (!foundCategories) {
-                return next(new AppError(404, '카테고리 목록을 찾을 수 없습니다.'));
-            }
+
+            if (!foundCategories) next(new AppError(404, '카테고리 목록을 찾을 수 없습니다.'));
+
             res.status(200).json({ message: '카테고리 목록 조회 성공 ', data: foundCategories });
         } catch (error) {
             console.error(error);
@@ -16,45 +16,145 @@ const productService = {
         }
     },
 
-    // [관리자] 카테고리 추가 - 카테고리 추가 >>> 프론트?
+    // [관리자] 카테고리 추가 - 카테고리 추가
+    async createCategory(req, res, next) {
+        try {
+            const addCategory = req.body.category;
+
+            const foundCategories = await Product.distinct('category');
+
+            if (foundCategories.includes(addCategory)) {
+                return next(new AppError(400, '이미 존재하는 카테고리입니다.'));
+            }
+
+            const minProductId = await Product.find()
+                .sort({ productId: 1 })
+                .limit(1)
+                .select('productId')
+                .lean();
+
+            const newProductId = minProductId.length ? minProductId[0].productId - 1 : 0;
+
+            const createInfo = {
+                productId: newProductId,
+                title: ' ',
+                author: ' ',
+                price: ' ',
+                category: addCategory,
+                introduction: ' ',
+                imgUrl: ' ',
+                bestSeller: false,
+                newBook: false,
+                recommend: false,
+                publisher: ' ',
+            };
+
+            const createdProduct = await Product.create(createInfo);
+
+            res.status(200).json({ message: '카테고리 추가 성공 ', data: addCategory });
+        } catch (error) {
+            console.error(error);
+            next(new AppError(500, '카테고리 추가 실패'));
+        }
+    },
 
     // [관리자] 카테고리 수정 - 카테고리 수정 (해당하는 모든 책에 반영)
     async updateCategory(req, res, next) {
         try {
-            const { category } = req.body;
+            const { currentCategory, updateCategory } = req.body;
 
             const updatedCategory = await Product.updateMany(
-                { category },
-                { category },
+                { category: currentCategory },
+                { category: updateCategory },
                 { new: true }
             );
-            if (updatedCategory.nModified === 0) {
-                return next(new AppError(404, '수정하신 내용은 기존과 동일합니다.'));
-            }
-            res.status(201).json({ message: '카테고리 수정 성공', data: updatedCategory });
+
+            if (updatedCategory.nModified === 0)
+                return next(new AppError(404, '수정하신 카테고리는 기존과 동일합니다.'));
+
+            res.status(201).json({ message: '카테고리 수정 성공', data: { updateCategory } });
         } catch (error) {
             console.error(error);
             next(new AppError(500, '카테고리 수정 실패'));
         }
     },
 
-    // [관리자] 카테고리 삭제 - 카테고리 삭제 >>> 프론트?
+    // [관리자] 카테고리 삭제 - 카테고리 삭제
+    async deleteCategory(req, res, next) {
+        try {
+            const removeCategory = req.body.category; // (body로 보낼때 필드 이름 category)
+
+            const deletedCategory = await Product.deleteMany({ category: removeCategory });
+
+            res.status(200).json({
+                message: '카테고리 삭제 성공 ',
+                data: deletedCategory,
+                removeCategory: removeCategory,
+            });
+        } catch (error) {
+            console.error(error);
+            next(new AppError(500, '카테고리 삭제 실패'));
+        }
+    },
 
     // [관리자] 상품 추가 - 책 정보 추가
     async createProduct(req, res, next) {
         try {
-            const { productId, title, author, price, category, introduction, publisher } = req.body;
-            const createInfo = {
-                productId,
+            // productId는 서버에서 새로 생성함
+            const {
                 title,
                 author,
                 price,
                 category,
                 introduction,
+                imgUrl,
+                bestSeller,
+                newBook,
+                recommend,
+                publisher,
+            } = req.body;
+
+            if (
+                !title ||
+                !author ||
+                !price ||
+                !category ||
+                !introduction ||
+                !imgUrl ||
+                !bestSeller ||
+                !newBook ||
+                !recommend ||
+                !publisher
+            )
+                return next(new AppError(404, '책 정보를 모두 입력해 주세요.'));
+
+            if (isNaN(price))
+                return next(new AppError(404, `입력하신 '${price}'은(는) 숫자 형식 이어야 합니다`));
+
+            const maxProductId = await Product.find()
+                .sort({ productId: -1 })
+                .limit(1)
+                .select('productId')
+                .lean();
+
+            const newProductId = maxProductId.length > 0 ? maxProductId[0].productId + 1 : 1;
+
+            const createInfo = {
+                productId: newProductId,
+                title,
+                author,
+                price,
+                category,
+                introduction,
+                imgUrl,
+                bestSeller,
+                newBook,
+                recommend,
                 publisher,
             };
 
             const createdProduct = await Product.create(createInfo);
+
             res.status(201).json({ message: '책 추가 성공', data: createdProduct });
         } catch (error) {
             console.error(error);
@@ -66,16 +166,47 @@ const productService = {
     async updateProduct(req, res, next) {
         try {
             const { productId } = req.params;
-            const { title, author, price, category, introduction, publisher } = req.body;
-            const updateInfo = { title, author, price, category, introduction, publisher };
+            const {
+                title,
+                author,
+                price,
+                category,
+                introduction,
+                imgUrl,
+                bestSeller,
+                newBook,
+                recommend,
+                publisher,
+            } = req.body;
+
+            if (isNaN(productId))
+                return next(
+                    new AppError(404, `입력하신 '${productId}'은(는) 숫자 형식 이어야 합니다`)
+                );
+
+            const updateInfo = {
+                title,
+                author,
+                price,
+                category,
+                introduction,
+                imgUrl,
+                bestSeller,
+                newBook,
+                recommend,
+                publisher,
+            };
+            const foundProduct = await Product.findOne({ productId });
+
+            if (!foundProduct) return next(new AppError(404, '수정하실 책을 찾을 수 없습니다.'));
 
             const updatedProduct = await Product.updateOne({ productId }, updateInfo, {
                 new: true,
             });
-            if (updatedProduct.nModified === 0) {
-                return next(new AppError(404, '책을 찾을 수 없습니다.'));
-            }
-            res.status(201).json({ message: '책 정보 수정 성공', data: updatedProduct });
+
+            const foundUpdatedProduct = await Product.findOne({ productId });
+
+            res.status(201).json({ message: '책 정보 수정 성공', data: foundUpdatedProduct }); // 수정된 내용 전체 보내줌
         } catch (error) {
             console.error(error);
             next(new AppError(500, '책 정보 수정 실패'));
@@ -87,13 +218,18 @@ const productService = {
         try {
             const { productId } = req.params;
 
-            const foundProduct = await Product.findOne({ productId });
-            if (!foundProduct) {
-                return next(new AppError(404, '책을 찾을 수 없습니다.'));
-            }
-            await Product.deleteOne({ productId });
+            if (isNaN(productId))
+                return next(
+                    new AppError(404, `입력하신 '${productId}'은(는) 숫자 형식 이어야 합니다`)
+                );
 
-            res.status(201).json({ message: '책 정보 삭제 성공' });
+            const foundProduct = await Product.findOne({ productId });
+
+            if (!foundProduct) return next(new AppError(404, '삭제하실 책을 찾을 수 없습니다.'));
+
+            const deletedProduct = await Product.deleteOne({ productId });
+
+            res.status(201).json({ message: '책 정보 삭제 성공', data: deletedProduct });
         } catch (error) {
             console.error(error);
             next(new AppError(500, '책 정보 삭제 실패'));
@@ -103,8 +239,14 @@ const productService = {
     // [사용자] 상품 목록 - 전체 책 조회
     async getAllProducts(req, res, next) {
         try {
-            const foundAllProducts = await Product.find({});
-            res.status(200).json({ message: '모든 책 조회 성공', data: foundAllProducts });
+            const foundAllProductsExceptEmpty = await Product.find({ productId: { $gt: 0 } });
+
+            // const foundAllProducts = await Product.find({});
+
+            res.status(200).json({
+                message: '모든 책 조회 성공',
+                data: foundAllProductsExceptEmpty,
+            });
         } catch (error) {
             console.error(error);
             next(new AppError(500, '모든 책 조회 실패'));
@@ -116,10 +258,14 @@ const productService = {
         try {
             const { category } = req.params;
 
-            const foundProduct = await Product.findOne({ category });
-            if (!foundProduct) {
-                return next(new AppError(404, `${category} 카테고리 관련 책을 찾을 수 없습니다.`));
-            }
+            if (!category)
+                return next(new AppError(400, `${category} 카테고리는 존재하지 않습니다.`));
+
+            const foundProduct = await Product.find({ category });
+
+            if (!foundProduct || foundProduct.length === 0 || foundProduct[0].productId < 1)
+                return next(new AppError(404, `${category} 카테고리 관련 책이 존재하지 않습니다.`));
+
             res.status(200).json({ message: '카테고리 관련 책 조회 성공 ', data: foundProduct });
         } catch (error) {
             console.error(error);
@@ -132,10 +278,15 @@ const productService = {
         try {
             const { productId } = req.params;
 
+            if (isNaN(productId))
+                return next(
+                    new AppError(404, `입력하신 '${productId}'은(는) 숫자 형식 이어야 합니다`)
+                );
+
             const foundProduct = await Product.findOne({ productId });
-            if (!foundProduct) {
-                return next(new AppError(404, '선택한 책을 찾을 수 없습니다.'));
-            }
+
+            if (!foundProduct) return next(new AppError(404, '선택한 책을 찾을 수 없습니다.'));
+
             res.status(200).json({ message: '선택한 책 조회 성공 ', data: foundProduct });
         } catch (error) {
             console.error(error);
