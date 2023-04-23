@@ -144,7 +144,7 @@ const getUserInfo = async (req, res, next) => {
 
     try {
         const { id } = req.query;
-        const foundUser = await User.findOne({ id });
+        const foundUser = await User.findOne({ userId: id });
         const { userId, email, userName } = foundUser;
         if (!foundUser) return next(new AppError(404, '사용자 정보를 찾을 수 없습니다'));
 

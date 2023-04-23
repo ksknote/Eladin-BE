@@ -12,8 +12,20 @@ const authRouter = require('./routes/authRouter');
 const orderRouter = require('./routes/orderRouter');
 const productRouter = require('./routes/productRouter');
 const port = Number(env.PORT || 3000);
+const allowedOrigins = [
+    'http://localhost:5501',
+    'http://localhost:5500',
+    'http://localhost:3000',
+    'http://localhost:8080',
+    'http://localhost:3001',
+];
 
-app.use(cors());
+const corsOptions = {
+    origin: allowedOrigins,
+    credentials: true, // 쿠키를 허용하기 위한 설정
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
