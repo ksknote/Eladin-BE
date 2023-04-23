@@ -4,12 +4,17 @@ const { isAccessTokenValid, authenticateUser } = require('../middlewares/jwt');
 
 const { signUp, logIn, logOut, getUserInfo, updateUser } = require('../services/userService');
 
-router.post('/users', signUp);
+router.post('/signup', signUp);
 
 // 최초로그인 이후부터 jwt토큰 검증 미들웨어를가 작동되어야 함.
+
 router.post('/login', logIn);
 
-router.get('/token', isAccessTokenValid, authenticateUser);
+// 토큰 유효성 검사를 위한 엔드포인트
+router.get('/token', isAccessTokenValid);
+
+// 사용자 인증 및 자동 로그인 처리를 위한 엔드포인트
+router.get('/authentication', authenticateUser);
 
 router.patch('/me', isAccessTokenValid, updateUser);
 
