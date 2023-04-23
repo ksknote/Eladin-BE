@@ -145,7 +145,7 @@ const getUserInfo = async (req, res, next) => {
     if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
 
     try {
-        const { id } = req.query;
+        const { id } = req.params;
         const foundUser = await User.findOne({ userId: id });
         const { userId, email, userName } = foundUser;
         if (!foundUser) return next(new AppError(404, '사용자 정보를 찾을 수 없습니다'));
