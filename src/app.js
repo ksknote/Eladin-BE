@@ -34,9 +34,9 @@ connectToDatabase()
     .then(async (db) => {
         app.use('/', indexRouter);
 
-        await insertDummyOrders();
-        await insertDummyUsers();
-        await insertDummyProducts();
+        // await insertDummyOrders();
+        // await insertDummyUsers();
+        // await insertDummyProducts();
 
         app.listen(port, () => {
             console.log('PORT:', env.PORT);
