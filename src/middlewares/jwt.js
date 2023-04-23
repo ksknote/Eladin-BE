@@ -22,15 +22,14 @@ const isAccessTokenValid = async (req, res, next) => {
                     .json({ message: 'Access denied. Please provide a valid token' });
             try {
                 const decodedRefreshToken = await jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
-                const newAccessToken = jwt.sign(
+                const accessToken = jwt.sign(
                     { userId: decodedRefreshToken.userId },
                     ACCESS_TOKEN_SECRET,
                     {
                         expiresIn: ACCESS_TOKEN_EXPIRES_IN,
                     }
                 );
-
-                res.setHeader('accessToken', newAccessToken);
+                res.json({ accessToken });
                 next();
             } catch (err) {
                 // refresh token 이 만료된 경우
