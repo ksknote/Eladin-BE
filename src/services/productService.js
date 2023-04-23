@@ -186,6 +186,7 @@ const productService = {
             if (!foundProduct || foundProduct.length === 0) {
                 return next(new AppError(404, `${category} 카테고리 관련 책을 찾을 수 없습니다.`));
             }
+
             res.status(200).json({ message: '카테고리 관련 책 조회 성공 ', data: foundProduct });
         } catch (error) {
             console.error(error);
@@ -198,10 +199,16 @@ const productService = {
         try {
             const { productId } = req.params;
 
-            const foundProduct = await Product.findOne({ productId });
-            if (!foundProduct) {
-                return next(new AppError(404, '선택한 책을 찾을 수 없습니다.'));
+            if (isNaN(productId)) {
+                return next(
+                    new AppError(404, `입력하신 ${productId}은(는) 숫자 형식 이어야 합니다`)
+                );
             }
+
+            const foundProduct = await Product.findOne({ productId });
+
+            if (!foundProduct) return next(new AppError(404, '선택한 책을 찾을 수 없습니다.'));
+
             res.status(200).json({ message: '선택한 책 조회 성공 ', data: foundProduct });
         } catch (error) {
             console.error(error);
