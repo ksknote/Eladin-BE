@@ -19,7 +19,13 @@ const productService = {
     // [관리자] 카테고리 추가 - 카테고리 추가
     async createCategory(req, res, next) {
         try {
-            const addCategory = req.body.category; // (body로 보낼때 필드 이름 category)
+            const addCategory = req.body.category;
+
+            const foundCategories = await Product.distinct('category');
+
+            if (foundCategories.includes(addCategory)) {
+                return next(new AppError(400, '이미 존재하는 카테고리입니다.'));
+            }
 
             const minProductId = await Product.find()
                 .sort({ productId: 1 })
