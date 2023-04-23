@@ -79,7 +79,7 @@ const logIn = async (req, res, next) => {
         const refreshToken = jwt.sign({ userId: foundUser.userId }, REFRESH_TOKEN_SECRET, {
             expiresIn: REFRESH_TOKEN_EXPIRES_IN,
         });
-        // res.setHeader('Authorization', `Bearer ${accessToken}`);
+        res.setHeader('Authorization', `Bearer ${accessToken}`);
         // 만약 HTTPS를 사용한다면, res.cookie() 메서드에 secure: true 옵션을 추가하여 쿠키가 HTTPS로만 전송되도록 설정 가능
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
