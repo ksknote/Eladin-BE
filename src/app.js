@@ -19,13 +19,13 @@ const allowedOrigins = [
     'http://localhost:8080',
     'http://localhost:3001',
 ];
-app.use(
-    cors({
-        origin: allowedOrigins,
-        credentials: true, // 쿠키를 허용하기 위한 설정
-    })
-);
 
+const corsOptions = {
+    origin: allowedOrigins,
+    credentials: true, // 쿠키를 허용하기 위한 설정
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
