@@ -81,9 +81,9 @@ const logIn = async (req, res, next) => {
         });
         // res.setHeader('Authorization', `Bearer ${accessToken}`);
         // 만약 HTTPS를 사용한다면, res.cookie() 메서드에 secure: true 옵션을 추가하여 쿠키가 HTTPS로만 전송되도록 설정 가능
-        // res.cookie('refreshToken', refreshToken, {
-        //     httpOnly: true,
-        // });
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+        });
         res.status(200).json({
             message: '로그인 성공',
             data: {
