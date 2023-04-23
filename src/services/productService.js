@@ -6,9 +6,9 @@ const productService = {
     async getCategoryList(req, res, next) {
         try {
             const foundCategories = await Product.distinct('category');
-            if (!foundCategories) {
-                return next(new AppError(404, '카테고리 목록을 찾을 수 없습니다.'));
-            }
+
+            if (!foundCategories) next(new AppError(404, '카테고리 목록을 찾을 수 없습니다.'));
+
             res.status(200).json({ message: '카테고리 목록 조회 성공 ', data: foundCategories });
         } catch (error) {
             console.error(error);
@@ -28,9 +28,10 @@ const productService = {
                 { category: updateCategory },
                 { new: true }
             );
-            if (updatedCategory.nModified === 0) {
+
+            if (updatedCategory.nModified === 0)
                 return next(new AppError(404, '수정하신 카테고리는 기존과 동일합니다.'));
-            }
+
             res.status(201).json({ message: '카테고리 수정 성공', data: { updateCategory } });
         } catch (error) {
             console.error(error);
@@ -43,8 +44,8 @@ const productService = {
     // [관리자] 상품 추가 - 책 정보 추가
     async createProduct(req, res, next) {
         try {
+            // productId는 서버에서 새로 생성함
             const {
-                // productId는 서버에서 새로 생성함
                 title,
                 author,
                 price,
@@ -68,9 +69,11 @@ const productService = {
                 !newBook ||
                 !recommend ||
                 !publisher
-            ) {
+            )
                 return next(new AppError(404, '책 정보를 모두 입력해 주세요.'));
-            }
+
+            if (isNaN(price))
+                return next(new AppError(404, `입력하신 '${price}'은(는) 숫자 형식 이어야 합니다`));
 
             const maxProductId = await Product.find()
                 .sort({ productId: -1 })
@@ -95,6 +98,7 @@ const productService = {
             };
 
             const createdProduct = await Product.create(createInfo);
+
             res.status(201).json({ message: '책 추가 성공', data: createdProduct });
         } catch (error) {
             console.error(error);
@@ -119,6 +123,11 @@ const productService = {
                 publisher,
             } = req.body;
 
+            if (isNaN(productId))
+                return next(
+                    new AppError(404, `입력하신 '${productId}'은(는) 숫자 형식 이어야 합니다`)
+                );
+
             const updateInfo = {
                 title,
                 author,
@@ -136,9 +145,9 @@ const productService = {
                 new: true,
             });
 
-            const updatedProductAgain = await Product.findOne({ productId }); // 수정된 내용 전체 보내줌
+            const foundUpdatedProduct = await Product.findOne({ productId });
 
-            res.status(201).json({ message: '책 정보 수정 성공', data: updatedProductAgain });
+            res.status(201).json({ message: '책 정보 수정 성공', data: foundUpdatedProduct }); // 수정된 내용 전체 보내줌
         } catch (error) {
             console.error(error);
             next(new AppError(500, '책 정보 수정 실패'));
@@ -150,15 +159,18 @@ const productService = {
         try {
             const { productId } = req.params;
 
+            if (isNaN(productId))
+                return next(
+                    new AppError(404, `입력하신 '${productId}'은(는) 숫자 형식 이어야 합니다`)
+                );
+
             const foundProduct = await Product.findOne({ productId });
 
-            if (!foundProduct) {
-                return next(new AppError(404, '삭제하실 책을 찾을 수 없습니다.'));
-            }
+            if (!foundProduct) return next(new AppError(404, '삭제하실 책을 찾을 수 없습니다.'));
 
-            await Product.deleteOne({ productId });
+            const deletedProduct = await Product.deleteOne({ productId });
 
-            res.status(201).json({ message: '책 정보 삭제 성공' });
+            res.status(201).json({ message: '책 정보 삭제 성공', data: deletedProduct });
         } catch (error) {
             console.error(error);
             next(new AppError(500, '책 정보 삭제 실패'));
@@ -169,6 +181,7 @@ const productService = {
     async getAllProducts(req, res, next) {
         try {
             const foundAllProducts = await Product.find({});
+
             res.status(200).json({ message: '모든 책 조회 성공', data: foundAllProducts });
         } catch (error) {
             console.error(error);
@@ -183,9 +196,10 @@ const productService = {
 
             const foundProduct = await Product.find({ category });
 
-            if (!foundProduct || foundProduct.length === 0) {
-                return next(new AppError(404, `${category} 카테고리 관련 책을 찾을 수 없습니다.`));
-            }
+            if (!foundProduct || foundProduct.length === 0)
+                return next(
+                    new AppError(404, `'${category}' 카테고리 관련 책을 찾을 수 없습니다.`)
+                );
 
             res.status(200).json({ message: '카테고리 관련 책 조회 성공 ', data: foundProduct });
         } catch (error) {
@@ -199,11 +213,10 @@ const productService = {
         try {
             const { productId } = req.params;
 
-            if (isNaN(productId)) {
+            if (isNaN(productId))
                 return next(
-                    new AppError(404, `입력하신 ${productId}은(는) 숫자 형식 이어야 합니다`)
+                    new AppError(404, `입력하신 '${productId}'은(는) 숫자 형식 이어야 합니다`)
                 );
-            }
 
             const foundProduct = await Product.findOne({ productId });
 
