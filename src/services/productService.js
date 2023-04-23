@@ -34,7 +34,6 @@ const productService = {
                 .lean();
 
             const newProductId = minProductId.length ? minProductId[0].productId - 1 : 0;
-            console.log(newProductId);
 
             const createInfo = {
                 productId: newProductId,
@@ -51,18 +50,6 @@ const productService = {
             };
 
             const createdProduct = await Product.create(createInfo);
-
-            // 얘가 조건이다 다 추가해보자
-            // const productList = await Product.find({
-            //     category: addCategory,
-            //     $or: [
-            //         { title: { $ne: '' } },
-            //         { author: { $ne: '' } },
-            //         { price: { $ne: '' } },
-            //         { imgUrl: { $ne: '' } },
-            //         { publisher: { $ne: '' } },
-            //     ],
-            // });
 
             res.status(200).json({ message: '카테고리 추가 성공 ', data: addCategory });
         } catch (error) {
@@ -252,9 +239,14 @@ const productService = {
     // [사용자] 상품 목록 - 전체 책 조회
     async getAllProducts(req, res, next) {
         try {
-            const foundAllProducts = await Product.find({});
+            const foundAllProductsExceptEmpty = await Product.find({ productId: { $gt: 0 } });
 
-            res.status(200).json({ message: '모든 책 조회 성공', data: foundAllProducts });
+            // const foundAllProducts = await Product.find({});
+
+            res.status(200).json({
+                message: '모든 책 조회 성공',
+                data: foundAllProductsExceptEmpty,
+            });
         } catch (error) {
             console.error(error);
             next(new AppError(500, '모든 책 조회 실패'));
@@ -266,9 +258,12 @@ const productService = {
         try {
             const { category } = req.params;
 
+            if (!category)
+                return next(new AppError(400, `${category} 카테고리는 존재하지 않습니다.`));
+
             const foundProduct = await Product.find({ category });
 
-            if (!foundProduct || foundProduct.length === 0)
+            if (!foundProduct || foundProduct.length === 0 || foundProduct[0].productId < 1)
                 return next(new AppError(404, `${category} 카테고리 관련 책이 존재하지 않습니다.`));
 
             res.status(200).json({ message: '카테고리 관련 책 조회 성공 ', data: foundProduct });
