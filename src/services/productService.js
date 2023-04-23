@@ -21,10 +21,17 @@ const productService = {
         try {
             const addCategory = req.body.category; // (body로 보낼때 필드 이름 category)
 
-            const randomProductId = Math.floor(Math.random() * 900000) + 100000;
+            const minProductId = await Product.find()
+                .sort({ productId: 1 })
+                .limit(1)
+                .select('productId')
+                .lean();
+
+            const newProductId = minProductId.length ? minProductId[0].productId - 1 : 0;
+            console.log(newProductId);
 
             const createInfo = {
-                productId: randomProductId,
+                productId: newProductId,
                 title: ' ',
                 author: ' ',
                 price: ' ',
@@ -196,6 +203,9 @@ const productService = {
                 recommend,
                 publisher,
             };
+            const foundProduct = await Product.findOne({ productId });
+
+            if (!foundProduct) return next(new AppError(404, '수정하실 책을 찾을 수 없습니다.'));
 
             const updatedProduct = await Product.updateOne({ productId }, updateInfo, {
                 new: true,
