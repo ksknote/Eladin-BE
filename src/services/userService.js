@@ -72,11 +72,17 @@ const logIn = async (req, res, next) => {
         const isMatch = await bcrypt.compare(password, foundUser.password);
         if (!isMatch) return next(new AppError(400, '비밀번호가 일치하지 않습니다.'));
 
-        const accessToken = jwt.sign({ userId: foundUser.userId }, ACCESS_TOKEN_SECRET, {
+        const payload = {
+            userId: foundUser.userId,
+            password: foundUser.password,
+            role: foundUser.role,
+        };
+
+        const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
             expiresIn: ACCESS_TOKEN_EXPIRES_IN,
         });
 
-        const refreshToken = jwt.sign({ userId: foundUser.userId }, REFRESH_TOKEN_SECRET, {
+        const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
             expiresIn: REFRESH_TOKEN_EXPIRES_IN,
         });
         res.setHeader('Authorization', `Bearer ${accessToken}`);
@@ -160,7 +166,7 @@ const getUserInfo = async (req, res, next) => {
             userName,
         };
         res.status(200).json({ message: '사용자 정보 조회 성공', data: userInfo });
-        console.log("사용자 정보 조회 성공");
+        console.log('사용자 정보 조회 성공');
     } catch (error) {
         console.error(error);
         next(new AppError(500, '사용자 정보 조회 실패'));
