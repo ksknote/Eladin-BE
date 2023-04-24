@@ -67,6 +67,8 @@ const logIn = async (req, res, next) => {
         const foundUser = await User.findOne({ userId });
         if (!foundUser) return next(new AppError(400, '존재하지 않는 아이디입니다.'));
 
+        // const { userId, password, email, userName } = foundUser;
+
         const isMatch = await bcrypt.compare(password, foundUser.password);
         if (!isMatch) return next(new AppError(400, '비밀번호가 일치하지 않습니다.'));
 
@@ -77,12 +79,11 @@ const logIn = async (req, res, next) => {
         const refreshToken = jwt.sign({ userId: foundUser.userId }, REFRESH_TOKEN_SECRET, {
             expiresIn: REFRESH_TOKEN_EXPIRES_IN,
         });
-        // res.setHeader('Authorization', `Bearer ${accessToken}`);
+        res.setHeader('Authorization', `Bearer ${accessToken}`);
         // 만약 HTTPS를 사용한다면, res.cookie() 메서드에 secure: true 옵션을 추가하여 쿠키가 HTTPS로만 전송되도록 설정 가능
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
         });
-
         res.status(200).json({
             message: '로그인 성공',
             data: {
@@ -117,10 +118,15 @@ const updateUser = async (req, res, next) => {
 
         if (userName) updateData.userName = userName;
 
-        const updateUser = await User.updateOne({ userId }, { $set: updateData });
+        const updateUser = await User.updateOne({ userId }, { $set: updateData }, { new: true });
+        const { userId, email, userName } = updateUser;
         res.status(200).json({
             message: '회원정보 수정 성공',
-            data: updateUser,
+            data: {
+                userId,
+                email,
+                userName,
+            },
         });
     } catch (error) {
         console.error(error);

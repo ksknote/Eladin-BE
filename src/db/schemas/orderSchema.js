@@ -49,9 +49,15 @@ const orderSchema = new Schema(
             receiverPhone: {
                 type: String,
                 required: true,
+                match: [/^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/, '유효하지 않은 전화번호입니다.'],
             },
             // 수령자 주소
             address: {
+                type: String,
+                required: true,
+            },
+            // 수령자 상세 주소
+            addressDetail: {
                 type: String,
                 required: true,
             },
@@ -59,6 +65,10 @@ const orderSchema = new Schema(
             postCode: {
                 type: String,
                 required: true,
+            },
+            deliveryMessage: {
+                type: String,
+                required: false,
             },
         },
         // 배송 상태
