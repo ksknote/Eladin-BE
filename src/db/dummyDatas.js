@@ -4097,6 +4097,7 @@ const dummyProducts = [
     {
         productId: 291,
         title: '쉬운 중국요리(4800원 요리책)',
+        author: '주부생활사 편집부',
         price: 4800,
         category: '요리/레시피',
         introduction: '',
@@ -4136,6 +4137,7 @@ const dummyProducts = [
     {
         productId: 294,
         title: '기운나는 요리(4800원 요리책 17)',
+        author: '주부생활 편집부',
         price: 0,
         category: '요리/레시피',
         introduction: '',
@@ -4148,6 +4150,7 @@ const dummyProducts = [
     {
         productId: 295,
         title: '눈깜짝요리(4800원 요리책 18)',
+        author: '주부생활 편집부',
         price: 0,
         category: '요리/레시피',
         introduction: '',

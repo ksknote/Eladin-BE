@@ -258,13 +258,15 @@ const productService = {
                 );
 
             const foundProduct = await Product.find({ category, productId: { $gt: 0 } });
-
             if (!foundProduct || foundProduct.length === 0)
                 return next(
                     new AppError(400, `'${category}' 카테고리 관련 책이 존재하지 않습니다.`)
                 );
 
-            res.status(200).json({ message: '카테고리별 책 목록 조회 성공', data: foundProduct });
+            res.status(200).json({
+                message: '카테고리별 책 목록 조회 성공',
+                data: foundProduct,
+            });
         } catch (error) {
             console.error(error);
             next(new AppError(500, '서버 에러'));

@@ -24,7 +24,8 @@ const signUp = async (req, res, next) => {
     if (!userId || !password || !email || !userName) {
         return next(new AppError(400, '모든사항을 입력해주세요.'));
     }
-
+    // // 비밀번호 영문+숫자+특수문자 조합 8~15자리 유효성검사
+    // const regExp = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$/;
     try {
         const foundUser = await User.findOne({ $or: [{ userId }, { email }, { userName }] });
         if (foundUser) {
@@ -143,7 +144,7 @@ const logOut = async (req, res, next) => {
     if (req.method !== 'DELETE') return next(new AppError(405, '잘못된 요청입니다.'));
 
     try {
-        res.clearCookie('tokens.access_token');
+        res.clearCookie('token.refreshToken');
         res.status(200).json({ message: '로그아웃 성공' });
     } catch (error) {
         console.error(error);
