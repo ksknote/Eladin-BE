@@ -118,14 +118,13 @@ const updateUser = async (req, res, next) => {
 
         if (userName) updateData.userName = userName;
 
-        const updateUser = await User.updateOne({ userId }, { $set: updateData }, { new: true });
-        const { userId, email, userName } = updateUser;
+        const updatedUser = await User.updateOne({ userId }, { $set: updateData }, { new: true });
         res.status(200).json({
             message: '회원정보 수정 성공',
             data: {
-                userId,
-                email,
-                userName,
+                userId: updatedUser.userId,
+                email: updatedUser.email,
+                userName: updatedUser.userName,
             },
         });
     } catch (error) {
