@@ -32,7 +32,7 @@ router.delete('/products/:productId', isAccessTokenValid, productService.deleteP
 router.get('/products', productService.getAllProducts); // (메인 페이지)
 
 // [사용자] 상품 목록 - 카테고리별 책 목록 조회
-router.get('/products/:category', productService.getProductsByCategory); // (카테고리 관리 페이지)
+router.get('/categories/:category', productService.getProductsByCategory); // (카테고리 관리 페이지)
 
 // [사용자] 상품 목록 - 베스트셀러 책 목록 조회
 router.get('/products/best-sellers', productService.getProductsByBestSeller);
@@ -41,11 +41,7 @@ router.get('/products/best-sellers', productService.getProductsByBestSeller);
 router.get('/products/new-books', productService.getProductsByNewBook);
 
 // [사용자] 상품 목록 - 추천도서 책 목록 조회
-router.get(
-    '/products/recommended-books',
-
-    productService.getProductsByRecommended
-);
+router.get('/products/recommended-books', productService.getProductsByRecommended);
 
 // [사용자] 상품 상세 - 선택한 책의 상세정보 조회
 router.get('/products/:productId', productService.getProductByProductId); // (책 상세 페이지)
