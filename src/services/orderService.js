@@ -125,6 +125,10 @@ const orderService = {
 
     // [관리자] 주문 조회 - 전체 주문내역 조회
     async getAllOrders(req, res) {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: '접근 권한이 없습니다.' });
+        }
+
         try {
             const foundAllOrders = await Order.find({});
 
