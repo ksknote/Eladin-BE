@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 
 const productService = require('../services/productService');
-
+const { isAccessTokenValid } = require('../middlewares/jwt');
 // [사용자] 카테고리 조회 - 카테고리 목록 조회
 router.get('/categories', isAccessTokenValid, productService.getCategories); // (카테고리 목록 페이지), (상품 관리 페이지)
 
