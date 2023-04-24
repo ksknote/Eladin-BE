@@ -38,7 +38,7 @@ connectToDatabase()
 
         // await insertDummyOrders();
         // await insertDummyUsers();
-        // await insertDummyProducts();
+        await insertDummyProducts();
 
         app.listen(port, () => {
             console.log('PORT:', env.PORT);
