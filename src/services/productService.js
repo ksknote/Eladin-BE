@@ -3,7 +3,7 @@ const { AppError } = require('../middlewares/errorHandler');
 
 const productService = {
     // [사용자] 카테고리 조회 - 카테고리 목록 조회
-    async getCategoryList(req, res, next) {
+    async getCategories(req, res, next) {
         if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
 
         try {
@@ -253,7 +253,7 @@ const productService = {
     },
 
     // [사용자] 상품 목록 - 카테고리별 책 목록 조회
-    async getProductByCategory(req, res, next) {
+    async getProductsByCategory(req, res, next) {
         if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
 
         try {
@@ -263,7 +263,7 @@ const productService = {
 
             const foundCategories = await Product.distinct('category');
 
-            if (!foundCategories.includes(currentCategory))
+            if (!foundCategories.includes(category))
                 return next(
                     new AppError(404, `조회하실 '${category}' 카테고리는 존재하지 않습니다.`)
                 );
@@ -279,6 +279,66 @@ const productService = {
         } catch (error) {
             console.error(error);
             next(new AppError(500, '카테고리별 책 조회 실패'));
+        }
+    },
+
+    // [사용자] 상품 목록 - 베스트셀러 목록 조회
+    async getProductsByBestSeller(req, res, next) {
+        if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
+
+        try {
+            const foundProducts = await Product.find({
+                bestSeller: true,
+                newBook: false,
+                recommend: false,
+            });
+
+            if (!foundProducts) next(new AppError(404, '베스트셀러 목록이 존재하지 않습니다.'));
+
+            res.status(200).json({ message: '베스트셀러 목록 조회 성공 ', data: foundProducts });
+        } catch (error) {
+            console.error(error);
+            next(new AppError(500, '베스트셀러 목록 조회 실패'));
+        }
+    },
+
+    // [사용자] 상품 목록 - 신간도서 책 목록 조회
+    async getProductsByNewBook(req, res, next) {
+        if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
+
+        try {
+            const foundProducts = await Product.find({
+                bestSeller: false,
+                newBook: true,
+                recommend: false,
+            });
+
+            if (!foundProducts) next(new AppError(404, '신간도서 목록이 존재하지 않습니다.'));
+
+            res.status(200).json({ message: '신간도서 목록 조회 성공 ', data: foundProducts });
+        } catch (error) {
+            console.error(error);
+            next(new AppError(500, '신간도서 목록 조회 실패'));
+        }
+    },
+
+    // [사용자] 상품 목록 - 추천도서 책 목록 조회
+    async getProductsByRecommended(req, res, next) {
+        if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
+
+        try {
+            const foundProducts = await Product.find({
+                bestSeller: false,
+                newBook: false,
+                recommend: true,
+            });
+
+            if (!foundProducts) next(new AppError(404, '추천도서 목록이 존재하지 않습니다.'));
+
+            res.status(200).json({ message: '추천도서 목록 조회 성공 ', data: foundProducts });
+        } catch (error) {
+            console.error(error);
+            next(new AppError(500, '추천도서 목록 조회 실패'));
         }
     },
 
