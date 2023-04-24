@@ -247,9 +247,6 @@ const productService = {
     async getProductsByCategory(req, res, next) {
         try {
             const { category } = req.params;
-            console.log(category);
-            decodeURIComponent(category);
-            console.log(category);
 
             if (!category) return next(new AppError(400, '카테고리를 입력해 주세요.'));
 
