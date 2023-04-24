@@ -1,11 +1,9 @@
-const { Product } = require('../db/models/index');
+const { Product, User } = require('../db/models/index');
 const { AppError } = require('../middlewares/errorHandler');
 
 const productService = {
     // [사용자] 카테고리 조회 - 카테고리 목록 조회
     async getCategories(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
-
         try {
             const foundCategories = await Product.distinct('category');
 
@@ -20,7 +18,7 @@ const productService = {
 
     // [관리자] 카테고리 추가 - 카테고리 추가
     async createCategory(req, res, next) {
-        if (req.method !== 'POST') return next(new AppError(405, '잘못된 요청입니다.'));
+        if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
 
         try {
             const addCategory = req.body.category;
@@ -58,18 +56,16 @@ const productService = {
             };
 
             const createdProduct = await Product.create(createInfo);
-
             res.status(201).json({ message: '카테고리 등록 성공 ', data: addCategory });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, { message: '카테고리 등록 실패' }));
+            next(new AppError(500, { message: '서버 에러' }));
         }
     },
 
     // [관리자] 카테고리 수정 - 카테고리 수정 (해당하는 모든 책에 반영)
     async updateCategory(req, res, next) {
-        if (req.method !== 'PATCH') return next(new AppError(405, '잘못된 요청입니다.'));
-
+        if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
         try {
             const { currentCategory, updateCategory } = req.body;
 
@@ -78,8 +74,9 @@ const productService = {
                     new AppError(400, '현재 카테고리와, 수정하실 카테고리를 모두 입력해주세요.')
                 );
 
-            if (currentCategory === updateCategory)
-                return next(new AppError(400, '현재 카테고리와 수정하실 카테고리가 동일합니다.'));
+            // 휴먼 에러는 에러처리 굳이 안해도 됨
+            // if (currentCategory === updateCategory)
+            //     return next(new AppError(400, '현재 카테고리와 수정하실 카테고리가 동일합니다.'));
 
             const updatedCategory = await Product.updateMany(
                 { category: currentCategory },
@@ -90,14 +87,13 @@ const productService = {
             res.status(200).json({ message: '카테고리 수정 성공', data: { updateCategory } });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '카테고리 수정 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
     // [관리자] 카테고리 삭제 - 카테고리 삭제
     async deleteCategory(req, res, next) {
-        if (req.method !== 'DELETE') return next(new AppError(405, '잘못된 요청입니다.'));
-
+        if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
         try {
             const removeCategory = req.body.category;
 
@@ -120,14 +116,13 @@ const productService = {
             });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '카테고리 삭제 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
     // [관리자] 상품 추가 - 책 정보 추가
     async createProduct(req, res, next) {
-        if (req.method !== 'POST') return next(new AppError(405, '잘못된 요청입니다.'));
-
+        if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
         try {
             // productId는 서버에서 새로 생성함
             const { title, author, price, category, introduction, imgUrl, publisher } = req.body;
@@ -162,14 +157,13 @@ const productService = {
             res.status(201).json({ message: '책 추가 성공', data: createdProduct });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '책 추가 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
     // [관리자] 상품 수정 - 책 정보 수정
     async updateProduct(req, res, next) {
-        if (req.method !== 'PATCH') return next(new AppError(405, '잘못된 요청입니다.'));
-
+        if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
         try {
             const { productId } = req.params;
 
@@ -206,14 +200,13 @@ const productService = {
             res.status(200).json({ message: '책 정보 수정 성공', data: foundUpdatedProduct });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '책 정보 수정 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
     // [관리자] 상품 삭제 - 책 정보 삭제
     async deleteProduct(req, res, next) {
-        if (req.method !== 'DELETE') return next(new AppError(405, '잘못된 요청입니다.'));
-
+        if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
         try {
             const { productId } = req.params;
 
@@ -228,19 +221,17 @@ const productService = {
             res.status(200).json({ message: '책 정보 삭제 성공', data: deletedProduct });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '책 정보 삭제 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
     // [사용자] 상품 목록 - 전체 책 조회
     async getAllProducts(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
-
         try {
             const foundAllProductsExceptEmpty = await Product.find({ productId: { $gt: 0 } });
 
             if (!foundAllProductsExceptEmpty)
-                next(new AppError(404, 'DB에 책 데이터가 더이상 존재하지 않습니다.'));
+                next(new AppError(400, 'DB에 책 데이터가 더이상 존재하지 않습니다.'));
 
             res.status(200).json({
                 message: '모든 책 조회 성공',
@@ -248,14 +239,12 @@ const productService = {
             });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '모든 책 조회 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
     // [사용자] 상품 목록 - 카테고리별 책 목록 조회
     async getProductsByCategory(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
-
         try {
             const { category } = req.params;
 
@@ -265,26 +254,26 @@ const productService = {
 
             if (!foundCategories.includes(category))
                 return next(
-                    new AppError(404, `조회하실 '${category}' 카테고리는 존재하지 않습니다.`)
+                    new AppError(400, `조회하실 '${category}' 카테고리는 존재하지 않습니다.`)
                 );
 
             const foundProduct = await Product.find({ category, productId: { $gt: 0 } });
 
             if (!foundProduct || foundProduct.length === 0)
                 return next(
-                    new AppError(404, `'${category}' 카테고리 관련 책이 존재하지 않습니다.`)
+                    new AppError(400, `'${category}' 카테고리 관련 책이 존재하지 않습니다.`)
                 );
 
             res.status(200).json({ message: '카테고리별 책 목록 조회 성공', data: foundProduct });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '카테고리별 책 조회 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
     // [사용자] 상품 목록 - 베스트셀러 목록 조회
     async getProductsByBestSeller(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
+        if (req.method !== 'GET') return next(new AppError(400, '잘못된 요청입니다.'));
 
         try {
             const foundProducts = await Product.find({
@@ -293,18 +282,18 @@ const productService = {
                 recommend: false,
             });
 
-            if (!foundProducts) next(new AppError(404, '베스트셀러 목록이 존재하지 않습니다.'));
+            if (!foundProducts) next(new AppError(400, '베스트셀러 목록이 존재하지 않습니다.'));
 
             res.status(200).json({ message: '베스트셀러 목록 조회 성공 ', data: foundProducts });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '베스트셀러 목록 조회 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
     // [사용자] 상품 목록 - 신간도서 책 목록 조회
     async getProductsByNewBook(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
+        if (req.method !== 'GET') return next(new AppError(400, '잘못된 요청입니다.'));
 
         try {
             const foundProducts = await Product.find({
@@ -313,18 +302,18 @@ const productService = {
                 recommend: false,
             });
 
-            if (!foundProducts) next(new AppError(404, '신간도서 목록이 존재하지 않습니다.'));
+            if (!foundProducts) next(new AppError(400, '신간도서 목록이 존재하지 않습니다.'));
 
             res.status(200).json({ message: '신간도서 목록 조회 성공 ', data: foundProducts });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '신간도서 목록 조회 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
     // [사용자] 상품 목록 - 추천도서 책 목록 조회
     async getProductsByRecommended(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
+        if (req.method !== 'GET') return next(new AppError(400, '잘못된 요청입니다.'));
 
         try {
             const foundProducts = await Product.find({
@@ -333,18 +322,18 @@ const productService = {
                 recommend: true,
             });
 
-            if (!foundProducts) next(new AppError(404, '추천도서 목록이 존재하지 않습니다.'));
+            if (!foundProducts) next(new AppError(400, '추천도서 목록이 존재하지 않습니다.'));
 
             res.status(200).json({ message: '추천도서 목록 조회 성공 ', data: foundProducts });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '추천도서 목록 조회 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
     // [사용자] 상품 상세 - 선택한 책의 상세정보 조회
     async getProductByProductId(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
+        if (req.method !== 'GET') return next(new AppError(400, '잘못된 요청입니다.'));
 
         try {
             const { productId } = req.params;
@@ -353,12 +342,12 @@ const productService = {
 
             const foundProduct = await Product.findOne({ productId });
 
-            if (!foundProduct) return next(new AppError(404, '선택하신 책이 존재하지 않습니다.'));
+            if (!foundProduct) return next(new AppError(400, '선택하신 책이 존재하지 않습니다.'));
 
             res.status(200).json({ message: '선택한 책 조회 성공 ', data: foundProduct });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '선택한 책 조회 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 };
