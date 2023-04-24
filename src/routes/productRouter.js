@@ -4,7 +4,7 @@ const router = Router();
 const productService = require('../services/productService');
 const { isAccessTokenValid } = require('../middlewares/jwt');
 // [사용자] 카테고리 조회 - 카테고리 목록 조회
-router.get('/categories', isAccessTokenValid, productService.getCategories); // (카테고리 목록 페이지), (상품 관리 페이지)
+router.get('/categories', productService.getCategories); // (카테고리 목록 페이지), (상품 관리 페이지)
 
 // [관리자] 카테고리 추가 - 카테고리 등록
 // 그냥 입력한 카테고리만 넣고 나머지 필드는 없이 만들고, 나머지 라우터에서 조회할때는 필드 있는거만 조회되게 하자
@@ -29,25 +29,25 @@ router.patch('/products/productId', isAccessTokenValid, productService.updatePro
 router.delete('/products/productId', isAccessTokenValid, productService.deleteProduct); // (상품 관리 페이지)
 
 // [사용자] 상품 목록 - 전체 책 조회
-router.get('/products', isAccessTokenValid, productService.getAllProducts); // (메인 페이지)
+router.get('/products', productService.getAllProducts); // (메인 페이지)
 
 // [사용자] 상품 목록 - 카테고리별 책 목록 조회
-router.get('/products/:category', isAccessTokenValid, productService.getProductsByCategory); // (카테고리 관리 페이지)
+router.get('/products/:category', productService.getProductsByCategory); // (카테고리 관리 페이지)
 
 // [사용자] 상품 목록 - 베스트셀러 책 목록 조회
-router.get('/products/best-sellers', isAccessTokenValid, productService.getProductsByBestSeller);
+router.get('/products/best-sellers', productService.getProductsByBestSeller);
 
 // [사용자] 상품 목록 - 신간도서 책 목록 조회
-router.get('/products/new-books', isAccessTokenValid, productService.getProductsByNewBook);
+router.get('/products/new-books', productService.getProductsByNewBook);
 
 // [사용자] 상품 목록 - 추천도서 책 목록 조회
 router.get(
     '/products/recommended-books',
-    isAccessTokenValid,
+
     productService.getProductsByRecommended
 );
 
 // [사용자] 상품 상세 - 선택한 책의 상세정보 조회
-router.get('/products/product-info', isAccessTokenValid, productService.getProductByProductId); // (책 상세 페이지)
+router.get('/products/product-info', productService.getProductByProductId); // (책 상세 페이지)
 
 module.exports = router;
