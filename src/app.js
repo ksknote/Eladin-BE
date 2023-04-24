@@ -55,5 +55,5 @@ connectToDatabase()
 
 app.use('/auth', authRouter);
 app.use('/orders', orderRouter);
-app.use('/products', productRouter);
+app.use('/books', productRouter);
 app.use(errorHandlerMiddleware);
