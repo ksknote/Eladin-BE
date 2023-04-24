@@ -9,27 +9,33 @@ const ProductSchema = new Schema({
     title: {
         type: String,
         required: true,
+        minlength: 1,
+        trim: true,
     },
     author: {
         type: String,
         required: true,
-        default: 'Unknown',
+        trim: true,
     },
     price: {
         type: Number,
         required: false,
+        min: 0,
     },
     category: {
         type: String,
         required: true,
+        trim: true,
     },
     introduction: {
         type: String,
         required: false,
+        trim: true,
     },
     imgUrl: {
         type: String,
         required: true,
+        trim: true,
     },
     bestSeller: {
         type: Boolean,
@@ -46,6 +52,7 @@ const ProductSchema = new Schema({
     publisher: {
         type: String,
         required: true,
+        trim: true,
     },
 });
 
