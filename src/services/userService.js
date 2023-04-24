@@ -17,9 +17,6 @@ const hashPassword = async (password) => {
 };
 
 const signUp = async (req, res, next) => {
-    if (req.method !== 'POST') {
-        return next(new AppError(400, '잘못된 요청입니다.'));
-    }
     const { userId, password, email, userName } = req.body;
     if (!userId || !password || !email || !userName) {
         return next(new AppError(400, '모든사항을 입력해주세요.'));
@@ -56,7 +53,6 @@ const signUp = async (req, res, next) => {
 };
 
 const logIn = async (req, res, next) => {
-    if (req.method !== 'POST') return next(new AppError(405, '잘못된 요청입니다.'));
     const { userId, password } = req.body;
     if (!userId) {
         return next(new AppError(400, '아이디를 입력해주세요.'));
@@ -108,8 +104,6 @@ const logIn = async (req, res, next) => {
 };
 
 const updateUser = async (req, res, next) => {
-    if (req.method !== 'PATCH') return next(new AppError(405, '잘못된 요청입니다.'));
-
     const { password, email, userName } = req.body;
     const userId = req.user.userId;
     try {
@@ -141,8 +135,6 @@ const updateUser = async (req, res, next) => {
 };
 
 const logOut = async (req, res, next) => {
-    if (req.method !== 'DELETE') return next(new AppError(405, '잘못된 요청입니다.'));
-
     try {
         res.clearCookie('token.refreshToken');
         res.status(200).json({ message: '로그아웃 성공' });
@@ -153,8 +145,6 @@ const logOut = async (req, res, next) => {
 };
 
 const getUserInfo = async (req, res, next) => {
-    if (req.method !== 'GET') return next(new AppError(405, '잘못된 요청입니다.'));
-
     try {
         const { id } = req.params;
         const foundUser = await User.findOne({ userId: id });
