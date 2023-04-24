@@ -38,7 +38,7 @@ const orderService = {
             res.status(201).json({ message: '주문 추가 성공', data: createdOrder });
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: '주문 추가 실패' });
+            res.status(500).json({ message: '서버 에러' });
         }
     },
 
@@ -54,10 +54,10 @@ const orderService = {
                 { new: true }
             );
 
-            res.status(201).json({ message: '배송상태 수정 성공', data: updatedOrder });
+            res.status(200).json({ message: '배송상태 수정 성공', data: updatedOrder });
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: '배송상태 수정 실패' });
+            res.status(500).json({ message: '서버 에러' });
         }
     },
 
@@ -84,11 +84,11 @@ const orderService = {
                     { new: true }
                 );
 
-                res.status(201).json({ message: '주문정보 수정 성공', data: updatedOrder });
+                res.status(200).json({ message: '주문정보 수정 성공', data: updatedOrder });
             }
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: '주문정보 수정 실패' });
+            res.status(500).json({ message: '서버 에러' });
         }
     },
 
@@ -102,10 +102,10 @@ const orderService = {
                 { items: 0 } // 책 정보 제외
             );
 
-            res.status(201).json({ message: '현재 주문내역 조회 성공', data: foundOrder });
+            res.status(200).json({ message: '현재 주문내역 조회 성공', data: foundOrder });
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: '현재 주문내역 조회 실패' });
+            res.status(500).json({ message: '서버 에러' });
         }
     },
 
@@ -116,10 +116,10 @@ const orderService = {
 
             const foundOrders = await Order.find({ userId });
 
-            res.status(201).json({ message: '사용자 전체 주문내역 조회 성공', data: foundOrders });
+            res.status(200).json({ message: '사용자 전체 주문내역 조회 성공', data: foundOrders });
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: '사용자 전체 주문내역 조회 실패' });
+            res.status(500).json({ message: '서버 에러' });
         }
     },
 
@@ -128,13 +128,13 @@ const orderService = {
         try {
             const foundAllOrders = await Order.find({});
 
-            res.status(201).json({
+            res.status(200).json({
                 message: '관리자 전체 주문내역 조회 성공',
                 data: foundAllOrders,
             });
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: '관리자 전체 주문내역 조회 실패' });
+            res.status(500).json({ message: '서버 에러' });
         }
     },
 
@@ -150,11 +150,11 @@ const orderService = {
                     'orderInfo.orderNumber': orderNumber,
                 });
 
-                res.status(201).json({ message: '주문 취소 성공', data: canceledOrder });
+                res.status(200).json({ message: '주문 취소 성공', data: canceledOrder });
             }
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: '주문 취소 실패' });
+            res.status(500).json({ message: '서버 에러' });
         }
     },
 
@@ -165,10 +165,10 @@ const orderService = {
 
             const deletedOrder = await Order.deleteOne({ 'orderInfo.orderNumber': orderNumber });
 
-            res.status(201).json({ message: '주문 삭제 성공', data: deletedOrder });
+            res.status(200).json({ message: '주문 삭제 성공', data: deletedOrder });
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: '주문 삭제 실패' });
+            res.status(500).json({ message: '서버 에러' });
         }
     },
 };
