@@ -20,13 +20,13 @@ router.delete('/categories/category', isAccessTokenValid, productService.deleteC
 // [관리자] 상품 추가 - 책 정보 등록
 // productId는 서버에서 새로 생성함
 // category는 카테고리 조회 라우터에서 카테고리 리스트 받아서 사용자 선택한 값 보내야함
-router.post('/products/productId', isAccessTokenValid, productService.createProduct); // (상품 관리 페이지)
+router.post('/products/:productId', isAccessTokenValid, productService.createProduct); // (상품 관리 페이지)
 
 // [관리자] 상품 수정 - 책 정보 수정
-router.patch('/products/productId', isAccessTokenValid, productService.updateProduct); // (상품 관리 페이지)
+router.patch('/products/:productId', isAccessTokenValid, productService.updateProduct); // (상품 관리 페이지)
 
 // [관리자] 상품 삭제 - 책 정보 삭제
-router.delete('/products/productId', isAccessTokenValid, productService.deleteProduct); // (상품 관리 페이지)
+router.delete('/products/:productId', isAccessTokenValid, productService.deleteProduct); // (상품 관리 페이지)
 
 // [사용자] 상품 목록 - 전체 책 조회
 router.get('/products', productService.getAllProducts); // (메인 페이지)
@@ -48,6 +48,6 @@ router.get(
 );
 
 // [사용자] 상품 상세 - 선택한 책의 상세정보 조회
-router.get('/products/product-info', productService.getProductByProductId); // (책 상세 페이지)
+router.get('/products/:productId', productService.getProductByProductId); // (책 상세 페이지)
 
 module.exports = router;
