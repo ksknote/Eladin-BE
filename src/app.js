@@ -12,8 +12,23 @@ const authRouter = require('./routes/authRouter');
 const orderRouter = require('./routes/orderRouter');
 const productRouter = require('./routes/productRouter');
 const port = Number(env.PORT || 3000);
+const allowedOrigins = [
+    'http://localhost:5501',
+    'http://localhost:5502',
+    'http://localhost:5500',
+    'http://localhost:3000',
+    'http://localhost:3002',
+    'http://localhost:8080',
+    'http://localhost:3001',
+    'http://localhost:3002',
+];
 
-app.use(cors());
+const corsOptions = {
+    origin: allowedOrigins,
+    credentials: true, // 쿠키를 허용하기 위한 설정
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -22,9 +37,9 @@ connectToDatabase()
     .then(async (db) => {
         app.use('/', indexRouter);
 
-        await insertDummyOrders();
-        await insertDummyUsers();
-        await insertDummyProducts();
+        // await insertDummyOrders();
+        // await insertDummyUsers();
+        // await insertDummyProducts();
 
         app.listen(port, () => {
             console.log('PORT:', env.PORT);
@@ -40,5 +55,5 @@ connectToDatabase()
 
 app.use('/auth', authRouter);
 app.use('/orders', orderRouter);
-app.use('/products', productRouter);
+app.use('/books', productRouter);
 app.use(errorHandlerMiddleware);

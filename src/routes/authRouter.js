@@ -7,17 +7,18 @@ const { signUp, logIn, logOut, getUserInfo, updateUser } = require('../services/
 router.post('/signup', signUp);
 
 // 최초로그인 이후부터 jwt토큰 검증 미들웨어를가 작동되어야 함.
+
 router.post('/login', logIn);
 
-router.get('/isAuth', isAccessTokenValid, authenticateUser);
+// 토큰 유효성 검사를 위한 엔드포인트
+router.get('/token', isAccessTokenValid);
 
+// 사용자 인증 및 자동 로그인 처리를 위한 엔드포인트
+router.get('/authentication', authenticateUser);
 
-// authenticateUser < 주문할떄는 보안에 더 신경 써야해서 넣는게 좋을 듯 .
+router.patch('/me', isAccessTokenValid, updateUser);
 
-
-router.patch('/update', isAccessTokenValid, updateUser);
-
-router.get('/me', isAccessTokenValid, getUserInfo);
+router.get('/users/:id', isAccessTokenValid, getUserInfo);
 
 router.delete('/logout', logOut);
 

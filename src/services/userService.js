@@ -17,14 +17,12 @@ const hashPassword = async (password) => {
 };
 
 const signUp = async (req, res, next) => {
-    if (req.method !== 'POST') {
-        return next(new AppError(400, '잘못된 요청입니다.'));
-    }
     const { userId, password, email, userName } = req.body;
     if (!userId || !password || !email || !userName) {
         return next(new AppError(400, '모든사항을 입력해주세요.'));
     }
-
+    // // 비밀번호 영문+숫자+특수문자 조합 8~15자리 유효성검사
+    // const regExp = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$/;
     try {
         const foundUser = await User.findOne({ $or: [{ userId }, { email }, { userName }] });
         if (foundUser) {
@@ -55,7 +53,6 @@ const signUp = async (req, res, next) => {
 };
 
 const logIn = async (req, res, next) => {
-    if (req.method !== 'POST') return next(new AppError(405, '잘못된 요청입니다.'));
     const { userId, password } = req.body;
     if (!userId) {
         return next(new AppError(400, '아이디를 입력해주세요.'));
@@ -65,23 +62,28 @@ const logIn = async (req, res, next) => {
     }
     try {
         const foundUser = await User.findOne({ userId });
-        if (!foundUser) {
-            return next(new AppError(400, '존재하지 않는 아이디입니다.'));
-        }
-        const isMatch = await bcrypt.compare(password, foundUser.password);
-        if (!isMatch) {
-            return next(new AppError(400, '비밀번호가 일치하지 않습니다.'));
-        }
+        if (!foundUser) return next(new AppError(400, '존재하지 않는 아이디입니다.'));
 
-        const accessToken = jwt.sign({ userId: foundUser.userId }, ACCESS_TOKEN_SECRET, {
+        // const { userId, password, email, userName } = foundUser;
+
+        const isMatch = await bcrypt.compare(password, foundUser.password);
+        if (!isMatch) return next(new AppError(400, '비밀번호가 일치하지 않습니다.'));
+
+        const payload = {
+            userId: foundUser.userId,
+            password: foundUser.password,
+            role: foundUser.role,
+        };
+
+        const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
             expiresIn: ACCESS_TOKEN_EXPIRES_IN,
         });
 
-        const refreshToken = jwt.sign({ userId: foundUser.userId }, REFRESH_TOKEN_SECRET, {
+        const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
             expiresIn: REFRESH_TOKEN_EXPIRES_IN,
         });
-
         res.setHeader('Authorization', `Bearer ${accessToken}`);
+        // 만약 HTTPS를 사용한다면, res.cookie() 메서드에 secure: true 옵션을 추가하여 쿠키가 HTTPS로만 전송되도록 설정 가능
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
         });
@@ -89,8 +91,10 @@ const logIn = async (req, res, next) => {
             message: '로그인 성공',
             data: {
                 userId: foundUser.userId,
-                userName: foundUser.userName,
                 email: foundUser.email,
+                userName: foundUser.userName,
+                accessToken,
+                refreshToken,
             },
         });
     } catch (error) {
@@ -100,37 +104,29 @@ const logIn = async (req, res, next) => {
 };
 
 const updateUser = async (req, res, next) => {
-    if (req.method !== 'PATCH') {
-        return next(new AppError(405, '잘못된 요청입니다.'));
-    }
-
     const { password, email, userName } = req.body;
     const userId = req.user.userId;
     try {
         const foundUser = await User.findOne({ userId });
 
-        if (!foundUser) {
-            return next(new AppError(400, '존재하지 않는 아이디입니다.'));
-        }
+        if (!foundUser) return next(new AppError(400, '존재하지 않는 아이디입니다.'));
 
         const updateData = {};
 
-        if (password) {
-            updateData.password = await bcrypt.hash(password, 10);
-        }
+        if (password) updateData.password = await bcrypt.hash(password, 10);
 
-        if (email) {
-            updateData.email = email;
-        }
+        if (email) updateData.email = email;
 
-        if (userName) {
-            updateData.userName = userName;
-        }
+        if (userName) updateData.userName = userName;
 
-        const updateUser = await User.updateOne({ userId }, { $set: updateData });
+        const updatedUser = await User.updateOne({ userId }, { $set: updateData }, { new: true });
         res.status(200).json({
             message: '회원정보 수정 성공',
-            data: updateUser,
+            data: {
+                userId: updatedUser.userId,
+                email: updatedUser.email,
+                userName: updatedUser.userName,
+            },
         });
     } catch (error) {
         console.error(error);
@@ -139,11 +135,8 @@ const updateUser = async (req, res, next) => {
 };
 
 const logOut = async (req, res, next) => {
-    if (req.method !== 'DELETE') {
-        return next(new AppError(405, '잘못된 요청입니다.'));
-    }
     try {
-        res.clearCookie('tokens.access_token');
+        res.clearCookie('token.refreshToken');
         res.status(200).json({ message: '로그아웃 성공' });
     } catch (error) {
         console.error(error);
@@ -152,21 +145,19 @@ const logOut = async (req, res, next) => {
 };
 
 const getUserInfo = async (req, res, next) => {
-    if (req.method !== 'GET') {
-        return next(new AppError(405, '잘못된 요청입니다.'));
-    }
     try {
-        const { userId } = req.body;
-        const user = await User.findOne({ userId });
-        if (!user) {
-            return next(new AppError(404, '사용자 정보를 찾을 수 없습니다'));
-        }
+        const { id } = req.params;
+        const foundUser = await User.findOne({ userId: id });
+        const { userId, email, userName } = foundUser;
+        if (!foundUser) return next(new AppError(404, '사용자 정보를 찾을 수 없습니다'));
+
         const userInfo = {
-            userId: user.userId,
-            email: user.email,
-            userName: user.userName,
+            userId,
+            email,
+            userName,
         };
         res.status(200).json({ message: '사용자 정보 조회 성공', data: userInfo });
+        console.log('사용자 정보 조회 성공');
     } catch (error) {
         console.error(error);
         next(new AppError(500, '사용자 정보 조회 실패'));

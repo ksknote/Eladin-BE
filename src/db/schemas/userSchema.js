@@ -12,17 +12,18 @@ const UserSchema = new Schema(
         password: {
             type: String,
             required: true,
-            minlength: 8,
         },
         email: {
             type: String,
             required: true,
             unique: true,
-            match: /.+@.+..+/,
+            match: [/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/],
         },
         userName: {
             type: String,
             required: true,
+            unique: true,
+            match: [/^[a-zA-Z0-9가-힣]+$/],
         },
         role: {
             type: String,
