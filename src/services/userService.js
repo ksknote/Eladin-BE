@@ -149,7 +149,7 @@ const getUserInfo = async (req, res, next) => {
         const { id } = req.params;
         const foundUser = await User.findOne({ userId: id });
         const { userId, email, userName } = foundUser;
-        if (!foundUser) return next(new AppError(404, '사용자 정보를 찾을 수 없습니다'));
+        if (!foundUser) return next(new AppError(400, '사용자 정보를 찾을 수 없습니다'));
 
         const userInfo = {
             userId,
