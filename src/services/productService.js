@@ -7,12 +7,12 @@ const productService = {
         try {
             const foundCategories = await Product.distinct('category');
 
-            if (!foundCategories) next(new AppError(404, '카테고리 목록이 존재하지 않습니다.'));
+            if (!foundCategories) next(new AppError(400, '카테고리 목록이 존재하지 않습니다.'));
 
             res.status(200).json({ message: '카테고리 목록 조회 성공 ', data: foundCategories });
         } catch (error) {
             console.error(error);
-            next(new AppError(500, '카테고리 목록 조회 실패'));
+            next(new AppError(500, '서버 에러'));
         }
     },
 
@@ -29,7 +29,7 @@ const productService = {
 
             if (foundCategories.includes(addCategory)) {
                 return next(
-                    new AppError(404, `등록하실 '${addCategory}' 카테고리는 이미 존재합니다.`)
+                    new AppError(400, `등록하실 '${addCategory}' 카테고리는 이미 존재합니다.`)
                 );
             }
 
@@ -104,7 +104,7 @@ const productService = {
 
             if (!foundCategories.includes(removeCategory))
                 return next(
-                    new AppError(404, `삭제하실 '${removeCategory}' 카테고리가 존재하지 않습니다.`)
+                    new AppError(400, `삭제하실 '${removeCategory}' 카테고리가 존재하지 않습니다.`)
                 );
 
             const deletedCategory = await Product.deleteMany({ category: removeCategory });
@@ -176,7 +176,7 @@ const productService = {
 
             const foundProduct = await Product.findOne({ productId });
 
-            if (!foundProduct) return next(new AppError(404, '수정하실 책이 존재하지 않습니다.'));
+            if (!foundProduct) return next(new AppError(400, '수정하실 책이 존재하지 않습니다.'));
 
             const updateInfo = {
                 title,
@@ -214,7 +214,7 @@ const productService = {
 
             const foundProduct = await Product.findOne({ productId });
 
-            if (!foundProduct) return next(new AppError(404, '삭제하실 책이 존재하지 않습니다.'));
+            if (!foundProduct) return next(new AppError(400, '삭제하실 책이 존재하지 않습니다.'));
 
             const deletedProduct = await Product.deleteOne({ productId });
 
