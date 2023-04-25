@@ -24,8 +24,8 @@ const allowedOrigins = [
     'http://localhost:8080',
     'http://localhost:3001',
     'http://localhost:3002',
-    'http://34.64.105.163:80',
-    'http://10.178.0.22:3000/'
+    'http://34.64.105.163',
+    'http://www.eladin.store',
 ];
 
 const corsOptions = {
