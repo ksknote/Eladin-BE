@@ -6,6 +6,9 @@ const isAccessTokenValid = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const accessToken = authHeader && authHeader.split(' ')[1];
     const uuid = req.body.uuid;
+
+    if (req.method === 'GET' && !accessToken && !uuid) return next(); // 그냥 방문자인 경우
+
     console.log('나 지금 회원임 (1) >> ', accessToken);
     console.log('나 지금 비회원임 (1) >> ', uuid);
 
@@ -60,8 +63,7 @@ const isAccessTokenValid = async (req, res, next) => {
                 .status(403)
                 .json({ message: '토큰이 유효하지 않습니다. 토큰을 확인해주세요.' });
         }
-    }
-    if (!accessToken && uuid) {
+    } else if (!accessToken && uuid) {
         // 비회원 : 토큰은 없는데 uuid는 있음
         console.log('나 지금 비회원임 (2) >> ', uuid);
         try {
