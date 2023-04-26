@@ -38,6 +38,7 @@ const signUp = async (req, res, next) => {
         const hashedPassword = await hashPassword(password);
         const newUser = await User.create({
             userId,
+            uuid: null,
             password: hashedPassword,
             email,
             userName,
@@ -93,6 +94,7 @@ const logIn = async (req, res, next) => {
                 userId: foundUser.userId,
                 email: foundUser.email,
                 userName: foundUser.userName,
+                role: foundUser.role,
                 accessToken,
                 refreshToken,
             },
@@ -100,6 +102,37 @@ const logIn = async (req, res, next) => {
     } catch (error) {
         console.error(error);
         next(new AppError(500, '로그인 실패'));
+    }
+};
+
+const logInNonMember = async (req, res, next) => {
+    try {
+        const { email, password, userName } = req.body;
+
+        if (!email || !password || !userName)
+            return next(new AppError(400, '모든사항을 입력해주세요.'));
+
+        const foundUser = await User.findOne({ email });
+
+        if (foundUser) return next(new AppError(400, '이미 존재하는 이메일입니다'));
+
+        const hashedPassword = await hashPassword(password);
+
+        const NonMember = await User.create({
+            password: hashedPassword,
+            email,
+            userName,
+        });
+
+        const foundNonMember = await User.findOne({ email });
+
+        res.status(201).json({
+            message: '비회원 로그인 성공',
+            data: { uuid: foundNonMember.uuid },
+        });
+    } catch (error) {
+        console.error(error);
+        next(new AppError(500, '서버 에러'));
     }
 };
 
@@ -164,4 +197,4 @@ const getUserInfo = async (req, res, next) => {
     }
 };
 
-module.exports = { signUp, logIn, logOut, getUserInfo, updateUser };
+module.exports = { signUp, logIn, logInNonMember, logOut, getUserInfo, updateUser };
