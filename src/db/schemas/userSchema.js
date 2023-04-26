@@ -1,13 +1,19 @@
 const { Schema } = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const uuid = require('uuid');
 
 const UserSchema = new Schema(
     {
         userId: {
             type: String,
-            required: true,
+            required: false,
             unique: true,
+        },
+        uuid: {
+            type: String,
+            required: false,
+            default: uuid.v4(),
         },
         password: {
             type: String,
