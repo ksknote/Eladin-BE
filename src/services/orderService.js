@@ -163,7 +163,7 @@ const orderService = {
     // [사용자] 주문 완료 - 현재 주문내역 조회
     async getCurrentOrder(req, res, next) {
         try {
-            const { orderNumber } = req.body;
+            const { orderNumber } = req.params;
 
             if (!orderNumber) return next(new AppError(400, '주문번호를 입력해 주세요.'));
 
@@ -191,7 +191,7 @@ const orderService = {
     // [사용자] 주문 조회 - 개인 주문내역 조회
     async getMyAllOrders(req, res, next) {
         try {
-            const { userId } = req.body;
+            const { userId } = req.params;
 
             if (!userId) return next(new AppError(400, 'userId를 입력해 주세요'));
 
@@ -228,7 +228,7 @@ const orderService = {
     // [비회원] 주문 조회 - 개인 주문내역 조회
     async getMyAllOrdersForNonMember(req, res, next) {
         try {
-            const { uuid } = req.body;
+            const { uuid } = req.params;
 
             if (!uuid) return next(new AppError(400, 'uuid를 입력해 주세요'));
 
