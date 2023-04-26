@@ -4242,7 +4242,7 @@ const dummyUsers = [
         userId: 'user1',
         password: bcrypt.hashSync('password1', 10),
         email: 'user1@example.com',
-        userName: 'John Doe',
+        userName: 'JohnDoe',
         role: 'user',
         tokens: {
             accessToken: 'dummy_access_token_1',
@@ -4253,7 +4253,7 @@ const dummyUsers = [
         userId: 'admin1',
         password: bcrypt.hashSync('password1', 10),
         email: 'admin1@example.com',
-        userName: 'Jane Doe',
+        userName: 'JaneDoe',
         role: 'admin',
         tokens: {
             accessToken: 'dummy_access_token_2',
