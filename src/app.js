@@ -13,6 +13,9 @@ const orderRouter = require('./routes/orderRouter');
 const productRouter = require('./routes/productRouter');
 const port = Number(env.PORT || 3000);
 const allowedOrigins = [
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5500',
+    'http://127.0.0.1:5501',
     'http://localhost:5501',
     'http://localhost:5502',
     'http://localhost:5500',
@@ -21,6 +24,8 @@ const allowedOrigins = [
     'http://localhost:8080',
     'http://localhost:3001',
     'http://localhost:3002',
+    'http://34.64.105.163:80',
+    'http://10.178.0.22:3000/'
 ];
 
 const corsOptions = {
