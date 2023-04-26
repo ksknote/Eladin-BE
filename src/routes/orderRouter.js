@@ -17,13 +17,13 @@ router.patch('/admin', isAccessTokenValid, orderService.updateDeliveryStatus); /
 router.patch('/user', isAccessTokenValid, orderService.updateDeliveryInfo); // (주문내역 수정 페이지)
 
 // [사용자/비회원] 주문 완료 - 현재 주문내역 조회
-router.get('/user/complete', isAccessTokenValid, orderService.getCurrentOrder); // (주문완료 페이지)
+router.get('/user/:orderNumber', isAccessTokenValid, orderService.getCurrentOrder); // (주문완료 페이지)
 
 // [사용자] 주문 조회 - 개인 주문내역 조회
-router.get('/user', isAccessTokenValid, orderService.getMyAllOrders); // (주문내역 페이지)
+router.get('/user/:userId', isAccessTokenValid, orderService.getMyAllOrders); // (주문내역 페이지)
 
 // [비회원] 주문 조회 - 개인 주문내역 조회
-router.get('/nonmember', isAccessTokenValid, orderService.getMyAllOrdersForNonMember);
+router.get('/nonmember/:uuid', isAccessTokenValid, orderService.getMyAllOrdersForNonMember);
 
 // [관리자] 주문 조회 - 전체 주문내역 조회
 router.get('/admin', isAccessTokenValid, orderService.getAllOrders); // (관리 페이지)
