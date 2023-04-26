@@ -43,16 +43,16 @@ const productService = {
 
             const createInfo = {
                 productId: newProductId,
-                title: ' ',
-                author: ' ',
-                price: ' ',
+                title: '1',
+                author: '1',
+                price: 1,
                 category: addCategory,
-                introduction: ' ',
-                imgUrl: ' ',
+                introduction: '1',
+                imgUrl: '1',
                 bestSeller: false,
                 newBook: false,
                 recommend: false,
-                publisher: ' ',
+                publisher: '1',
             };
 
             const createdProduct = await Product.create(createInfo);
@@ -66,6 +66,7 @@ const productService = {
     // [관리자] 카테고리 수정 - 카테고리 수정 (해당하는 모든 책에 반영)
     async updateCategory(req, res, next) {
         if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
+
         try {
             const { currentCategory, updateCategory } = req.body;
 
@@ -94,6 +95,7 @@ const productService = {
     // [관리자] 카테고리 삭제 - 카테고리 삭제
     async deleteCategory(req, res, next) {
         if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
+
         try {
             const removeCategory = req.body.category;
 
@@ -123,6 +125,7 @@ const productService = {
     // [관리자] 상품 추가 - 책 정보 추가
     async createProduct(req, res, next) {
         if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
+
         try {
             // productId는 서버에서 새로 생성함
             const { title, author, price, category, introduction, imgUrl, publisher } = req.body;
@@ -164,6 +167,7 @@ const productService = {
     // [관리자] 상품 수정 - 책 정보 수정
     async updateProduct(req, res, next) {
         if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
+
         try {
             const { productId } = req.params;
 
@@ -207,6 +211,7 @@ const productService = {
     // [관리자] 상품 삭제 - 책 정보 삭제
     async deleteProduct(req, res, next) {
         if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
+
         try {
             const { productId } = req.params;
 
@@ -275,8 +280,6 @@ const productService = {
 
     // [사용자] 상품 목록 - 베스트셀러 목록 조회
     async getProductsByBestSeller(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(400, '잘못된 요청입니다.'));
-
         try {
             const foundProducts = await Product.find({
                 bestSeller: true,
@@ -295,8 +298,6 @@ const productService = {
 
     // [사용자] 상품 목록 - 신간도서 책 목록 조회
     async getProductsByNewBook(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(400, '잘못된 요청입니다.'));
-
         try {
             const foundProducts = await Product.find({
                 bestSeller: false,
@@ -315,8 +316,6 @@ const productService = {
 
     // [사용자] 상품 목록 - 추천도서 책 목록 조회
     async getProductsByRecommended(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(400, '잘못된 요청입니다.'));
-
         try {
             const foundProducts = await Product.find({
                 bestSeller: false,
@@ -335,8 +334,6 @@ const productService = {
 
     // [사용자] 상품 상세 - 선택한 책의 상세정보 조회
     async getProductByProductId(req, res, next) {
-        if (req.method !== 'GET') return next(new AppError(400, '잘못된 요청입니다.'));
-
         try {
             const { productId } = req.params;
 
