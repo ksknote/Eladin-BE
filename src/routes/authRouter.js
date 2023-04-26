@@ -20,10 +20,10 @@ router.post('/login', logIn);
 router.post('/loginNonMember', logInNonMember); // 비회원 로그인 uuid 발급
 
 // 토큰 유효성 검사를 위한 엔드포인트
-router.get('/token', isAccessTokenValid);
+// router.get('/token', isAccessTokenValid);
 
-// 사용자 인증 및 자동 로그인 처리를 위한 엔드포인트
-router.get('/authentication', authenticateUser);
+// 사용자 인증 및 자동 로그인 처리를 위한s 엔드포인트
+// router.get('/authentication', authenticateUser);
 
 router.patch('/me', isAccessTokenValid, updateUser);
 
