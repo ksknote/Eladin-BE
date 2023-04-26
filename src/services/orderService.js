@@ -193,7 +193,7 @@ const orderService = {
         try {
             const { userId } = req.params;
 
-            if (!userId) return next(new AppError(400, 'userId를 입력해 주세요'));
+            // if (!userId) return next(new AppError(400, '유저아이디를 입력해 주세요.'));
 
             const foundOrders = await Order.find({ userId });
 
