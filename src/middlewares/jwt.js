@@ -4,9 +4,10 @@ const User = require('../db/schemas/userSchema.js');
 
 const isAccessTokenValid = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
+
     const accessToken = authHeader && authHeader.split(' ')[1];
-    // uuid는 쿠키에있을수도 body에 있을 수도 있다.
-    const uuid = req.cookies.uuid || req.body.uuid;
+    // uuid는 쿠키에있을수도 body에 있을 수도 헤더에 있을 수도 있다.
+    const uuid = req.cookies.uuid || req.body.uuid || req.headers['uuid'];
 
     if (req.method === 'GET' && !accessToken && !uuid) return next(); // 그냥 방문자인 경우
 
