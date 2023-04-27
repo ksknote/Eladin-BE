@@ -2,7 +2,6 @@ const { Router } = require('express');
 const router = Router();
 const { isAccessTokenValid } = require('../middlewares/jwt');
 
-const productService = require('../services/productService');
 const {
     getCategories,
     createCategory,
