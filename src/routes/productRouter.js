@@ -1,7 +1,6 @@
 const { Router } = require('express');
 const router = Router();
 const { isAccessTokenValid } = require('../middlewares/jwt');
-
 const productService = require('../services/productService');
 const {
     getCategories,
@@ -37,6 +36,7 @@ router.delete('/categories/category', isAccessTokenValid, deleteCategory);
 // [관리자] 상품 추가 - 책 정보 등록
 // productId는 서버에서 새로 생성함
 // category는 카테고리 조회 라우터에서 카테고리 리스트 받아서 사용자 선택한 값 보내야함
+
 router.post('/products', isAccessTokenValid, createProduct); // (상품 관리 페이지)
 
 // [관리자] 상품 수정 - 책 정보 수정

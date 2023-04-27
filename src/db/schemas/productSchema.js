@@ -34,7 +34,7 @@ const ProductSchema = new Schema({
     },
     imgUrl: {
         type: String,
-        required: true,
+        required: false,
         trim: true,
     },
     bestSeller: {

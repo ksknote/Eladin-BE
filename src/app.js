@@ -25,13 +25,31 @@ const allowedOrigins = [
     'http://localhost:3001',
     'http://localhost:3002',
     'http://34.64.105.163:80',
-    'http://10.178.0.22:3000/'
 ];
 
 const corsOptions = {
     origin: allowedOrigins,
     credentials: true, // 쿠키를 허용하기 위한 설정
 };
+
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
+});
+
+const upload = multer({ storage: storage });
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -58,6 +76,13 @@ connectToDatabase()
         process.exit(1);
     });
 
+// Route for handling image uploads
+// app.use(express.static());
+
+// Route for handling image uploads
+app.post('/upload', upload.single('img'), (req, res) => {
+    res.status(200).json({ message: 'Image uploaded successfully!' });
+});
 app.use('/auth', authRouter);
 app.use('/orders', orderRouter);
 app.use('/books', productRouter);

@@ -122,11 +122,17 @@ const deleteCategory = async (req, res, next) => {
 const createProduct = async (req, res, next) => {
     if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
 
+    // const file = req.file;
+    // if (!file) {
+    //     return res.status(400).json({ message: 'Please upload a file' });
+    // }
+
+
     try {
         // productId는 서버에서 새로 생성함
         const { title, author, price, category, introduction, imgUrl, publisher } = req.body;
 
-        if (!title || !author || !price || !category || !introduction || !imgUrl || !publisher)
+        if (!title || !author || !price || !category || !introduction || !publisher)
             return next(new AppError(400, '책 정보를 모두 입력해 주세요.'));
 
         const maxProductId = await Product.find()
@@ -150,7 +156,7 @@ const createProduct = async (req, res, next) => {
             recommend: Math.random() >= 0.5,
             publisher,
         };
-
+        
         const createdProduct = await Product.create(createInfo);
 
         res.status(201).json({ message: '책 추가 성공', data: createdProduct });
