@@ -16,9 +16,6 @@ router.patch('/admin', isAccessTokenValid, orderService.updateDeliveryStatus); /
 // [사용자] 주문 수정 - 배송 시작 전까지 주문내역, 배송지정보 수정
 router.patch('/user', isAccessTokenValid, orderService.updateDeliveryInfo); // (주문내역 수정 페이지)
 
-// [사용자/비회원] 주문 완료 - 현재 주문내역 조회
-router.get('/user/:orderNumber', isAccessTokenValid, orderService.getCurrentOrder); // (주문완료 페이지)
-
 // [사용자] 주문 조회 - 개인 주문내역 조회
 router.get('/user/:userId', isAccessTokenValid, orderService.getMyAllOrders); // (주문내역 페이지)
 
@@ -33,5 +30,10 @@ router.delete('/user', isAccessTokenValid, orderService.cancelOrder); // (주문
 
 // [관리자] 주문 삭제 - 관리자 주문 삭제
 router.delete('/admin', isAccessTokenValid, orderService.deleteOrder); // (관리 페이지)
+
+// [사용자/비회원] 주문 완료 - 현재 주문내역 조회(주문이 완료되었습니다.)
+router.get('/:orderNumber', isAccessTokenValid, orderService.getCurrentOrder); // (주문완료 페이지)
+
+
 
 module.exports = router;
