@@ -27,7 +27,7 @@ const checkDuplicateUserId = async (req, res, next) => {
                 data: foundUser.userId,
             });
         } else {
-            res.status(200).json({ message: '사용 가능한 아이디 입니다.', data: null });
+            return next(new AppError(400, '사용 가능한 아이디 입니다.'));
         }
     } catch (error) {
         console.error(error);
@@ -46,7 +46,7 @@ const checkDuplicateEmail = async (req, res, next) => {
                 data: foundUser.email,
             });
         } else {
-            res.status(200).json({ message: '사용 가능한 이메일 입니다.', data: null });
+            return next(new AppError(400, '사용 가능한 이메일 입니다.'));
         }
     } catch (error) {
         console.error(error);
@@ -65,7 +65,7 @@ const checkDuplicateUserName = async (req, res, next) => {
                 data: foundUser.userName,
             });
         } else {
-            res.status(200).json({ message: '사용 가능한 닉네임 입니다.', data: null });
+            return next(new AppError(400, '사용 가능한 닉네임 입니다.'));
         }
     } catch (error) {
         console.error(error);
