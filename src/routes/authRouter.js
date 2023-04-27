@@ -3,6 +3,9 @@ const router = Router();
 const { isAccessTokenValid } = require('../middlewares/jwt');
 
 const {
+    checkDuplicateUserId,
+    checkDuplicateEmail,
+    checkDuplicateUserName,
     signUp,
     logIn,
     logInNonMember,
@@ -30,6 +33,12 @@ router.patch('/me', isAccessTokenValid, updateUser);
 router.get('/users/:id', isAccessTokenValid, getUserInfo);
 
 router.delete('/logout', logOut);
+
+router.get('/check-userid/:userId', checkDuplicateUserId);
+
+router.get('/check-email/:email', checkDuplicateEmail);
+
+router.get('/check-username/:userName', checkDuplicateUserName);
 
 module.exports = router;
 

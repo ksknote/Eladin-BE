@@ -16,6 +16,63 @@ const hashPassword = async (password) => {
     return hashedPassword;
 };
 
+const checkDuplicateUserId = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const foundUser = await User.findOne({ userId });
+
+        if (foundUser) {
+            res.status(200).json({
+                message: '이미 사용중인 아이디 입니다.',
+                data: foundUser.userId,
+            });
+        } else {
+            res.status(200).json({ message: '사용 가능한 아이디 입니다.' });
+        }
+    } catch (error) {
+        console.error(error);
+        next(new AppError(500, '[아이디 중복 검사] 서버 에러'));
+    }
+};
+
+const checkDuplicateEmail = async (req, res, next) => {
+    try {
+        const { email } = req.params;
+        const foundUser = await User.findOne({ email });
+
+        if (foundUser) {
+            res.status(200).json({
+                message: '이미 사용중인 이메일 입니다.',
+                data: foundUser.email,
+            });
+        } else {
+            res.status(200).json({ message: '사용 가능한 이메일 입니다.' });
+        }
+    } catch (error) {
+        console.error(error);
+        next(new AppError(500, '[이메일 중복 검사] 서버 에러'));
+    }
+};
+
+const checkDuplicateUserName = async (req, res, next) => {
+    try {
+        const { userName } = req.params;
+        const foundUser = await User.findOne({ userName });
+
+        if (foundUser) {
+            res.status(200).json({
+                message: '이미 사용중인 닉네임 입니다.',
+                data: foundUser.userName,
+            });
+        } else {
+            res.status(200).json({ message: '사용 가능한 닉네임 입니다.' });
+        }
+    } catch (error) {
+        console.error(error);
+        next(new AppError(500, '[닉네임 중복 검사] 서버 에러'));
+    }
+};
+
 const signUp = async (req, res, next) => {
     const { userId, password, email, userName } = req.body;
     if (!userId || !password || !email || !userName) {
@@ -197,4 +254,14 @@ const getUserInfo = async (req, res, next) => {
     }
 };
 
-module.exports = { signUp, logIn, logInNonMember, logOut, getUserInfo, updateUser };
+module.exports = {
+    checkDuplicateUserId,
+    checkDuplicateEmail,
+    checkDuplicateUserName,
+    signUp,
+    logIn,
+    logInNonMember,
+    logOut,
+    getUserInfo,
+    updateUser,
+};
