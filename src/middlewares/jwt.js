@@ -8,7 +8,11 @@ const isAccessTokenValid = async (req, res, next) => {
     // uuid는 쿠키에있을수도 body에 있을 수도 있다.
     const uuid = req.cookies.uuid || req.body.uuid;
 
-    if (req.method === 'GET' && !accessToken && !uuid) return next(); // 그냥 방문자인 경우
+    if (req.method === 'GET' && !accessToken && !uuid) {
+        // 그냥 방문자인 경우
+        console.log('나 지금 방문자임');
+        return next();
+    }
 
     console.log('나 지금 회원임 (1) >> ', accessToken);
     console.log('나 지금 비회원임 (1) >> ', uuid);
