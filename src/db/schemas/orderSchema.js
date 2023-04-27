@@ -55,6 +55,7 @@ const orderSchema = new Schema(
             receiverPhone: {
                 type: String,
                 required: true,
+                match: [/^01[016789]-\d{3,4}-\d{4}$/, '유효하지 않은 전화번호입니다.'],
                 // match: [/^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/, '유효하지 않은 전화번호입니다.'],
             },
             // 수령자 주소
