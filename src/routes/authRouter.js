@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const router = Router();
-const { isAccessTokenValid, authenticateUser } = require('../middlewares/jwt');
+const { isAccessTokenValid } = require('../middlewares/jwt');
 
 const {
     signUp,

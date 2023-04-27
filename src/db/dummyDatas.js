@@ -80,7 +80,7 @@ const dummyOrders = [
 const insertDummyOrders = async () => {
     try {
         await Order.deleteMany({}, { maxTimeMS: 60000 });
-        await Order.create(dummyOrders);
+        // await Order.create(dummyOrders);
         console.log('Dummy orders inserted successfully');
     } catch (error) {
         console.log('Error inserting dummy orders: ', error);

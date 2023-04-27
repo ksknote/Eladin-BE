@@ -76,7 +76,7 @@ const createOrderForNonMember = async (req, res, next) => {
 
         res.status(201).json({
             message: '비회원 주문 추가 성공',
-            data: { createdOrder, userName: foundUser.userName },
+            data: createdOrder,
         });
     } catch (error) {
         console.log(error);
@@ -261,12 +261,12 @@ const getMyAllOrdersForNonMember = async (req, res, next) => {
 
 // [관리자] 주문 조회 - 전체 주문내역 조회
 const getAllOrders = async (req, res, next) => {
+    console.log('전체주문내역 조회 요청들어옴');
     if (req.user.role !== 'admin') {
         return res.status(403).json({ message: '접근 권한이 없습니다.' });
     }
     try {
         const foundAllOrders = await Order.find({});
-
         if (!foundAllOrders) return next(new AppError(400, '전체 주문내역이 존재하지 않습니다.'));
 
         const titleList = [];
@@ -278,12 +278,17 @@ const getAllOrders = async (req, res, next) => {
             titleList.push(titles);
         }
 
-        const userNameList = [];
-
-        for (let order of foundAllOrders) {
-            const foundUserName = await User.findOne({ userId: order.userId });
-            userNameList.push(foundUserName.userName);
-        }
+        const userNameList = await Promise.all(
+            foundAllOrders.map(async (order) => {
+                let foundUserName;
+                if (order.userId) {
+                    foundUserName = await User.findOne({ userId: order.userId });
+                } else if (order.uuid) {
+                    foundUserName = await User.findOne({ uuid: order.uuid });
+                }
+                return foundUserName ? foundUserName.userName : 'N/A';
+            })
+        );
 
         res.status(200).json({
             message: '관리자 전체 주문내역 조회 성공',

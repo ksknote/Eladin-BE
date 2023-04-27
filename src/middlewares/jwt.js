@@ -82,19 +82,19 @@ const isAccessTokenValid = async (req, res, next) => {
     }
 };
 
-const authenticateUser = async (req, res) => {
-    try {
-        const { userId } = req.body;
-        const foundUser = await User.findOne({ userId });
-        if (!foundUser) return res.status(401).json({ message: '사용자를 찾을 수 없습니다.' });
+// const authenticateUser = async (req, res) => {
+//     try {
+//         const { userId } = req.body;
+//         const foundUser = await User.findOne({ userId });
+//         if (!foundUser) return res.status(401).json({ message: '사용자를 찾을 수 없습니다.' });
 
-        return res.status(200).json({
-            message: '사용자 인증 성공',
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: '서버 오류' });
-    }
-};
+//         return res.status(200).json({
+//             message: '사용자 인증 성공',
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: '서버 오류' });
+//     }
+// };
 
-module.exports = { isAccessTokenValid, authenticateUser };
+module.exports = { isAccessTokenValid };
