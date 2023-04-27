@@ -349,6 +349,29 @@ const productService = {
             next(new AppError(500, '서버 에러'));
         }
     },
+
+    // [사용지] 상품 조회 - 검색어 관련 조회
+    async getSearchProducts(req, res, next) {
+        try {
+            const query = req.query.q;
+
+            if (!query) return next(new AppError(400, '검색어를 입력해 주세요.'));
+
+            const foundBooks = await Product.find({
+                $or: [
+                    { title: { $regex: query, $options: 'i' } },
+                    { author: { $regex: query, $options: 'i' } },
+                    { category: { $regex: query, $options: 'i' } },
+                    { publisher: { $regex: query, $options: 'i' } },
+                ],
+            });
+
+            res.status(200).json({ message: '책 검색 성공', data: foundBooks });
+        } catch (error) {
+            console.error(error);
+            next(new AppError(500, '서버 에러'));
+        }
+    },
 };
 
 module.exports = productService;
