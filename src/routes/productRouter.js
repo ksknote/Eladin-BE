@@ -63,7 +63,7 @@ router.get('/products/recommended-books', isAccessTokenValid, getProductsByRecom
 // [사용자] 상품 상세 - 선택한 책의 상세정보 조회
 router.get('/products/:productId', isAccessTokenValid, getProductByProductId); // (책 상세 페이지)
 
-//[사용자] 상품 조회 - 검색어 관련 조회
+// [사용자] 상품 조회 - 검색어 관련 조회
 router.get('/search', isAccessTokenValid, getSearchProducts);
 
 module.exports = router;
