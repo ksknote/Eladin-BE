@@ -8,8 +8,8 @@ const connectToDatabase = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             writeConcern: {
-                w: 'majority', // Use 'majority' or another valid write concern mode
-                wtimeout: 5000, // Timeout in milliseconds (optional)
+                w: 'majority',
+                wtimeout: 5000,
             },
         });
 

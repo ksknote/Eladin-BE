@@ -18,13 +18,15 @@ const allowedOrigins = [
     'http://127.0.0.1:5501',
     'http://localhost:5501',
     'http://localhost:5502',
-    'http://localhost:5500',
+    'http://www.eladin.store',
     'http://localhost:3000',
     'http://localhost:3002',
     'http://localhost:8080',
     'http://localhost:3001',
     'http://localhost:3002',
+    'http://34.64.105.163',
     'http://34.64.105.163:80',
+    'http://www.eladin.store',
 ];
 
 const corsOptions = {
@@ -39,17 +41,6 @@ const fs = require('fs');
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
-});
-
-const upload = multer({ storage: storage });
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -76,13 +67,7 @@ connectToDatabase()
         process.exit(1);
     });
 
-// Route for handling image uploads
-// app.use(express.static());
-
-// Route for handling image uploads
-app.post('/upload', upload.single('img'), (req, res) => {
-    res.status(200).json({ message: 'Image uploaded successfully!' });
-});
+app.use('/static', express.static('public')); // 정적파일 관리 경로
 app.use('/auth', authRouter);
 app.use('/orders', orderRouter);
 app.use('/books', productRouter);

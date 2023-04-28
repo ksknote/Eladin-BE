@@ -21,7 +21,6 @@ const createOrder = async (req, res, next) => {
             Math.floor(Math.random() * 1000)
                 .toString()
                 .padStart(3, '0');
-        //Math.floor(Math.random() * 900000) + 100000;
         const totalPrice = items.reduce((acc, item) => acc + item.quantity * item.price, 0);
 
         const createInfo = {
@@ -59,7 +58,6 @@ const createOrderForNonMember = async (req, res, next) => {
             Math.floor(Math.random() * 1000)
                 .toString()
                 .padStart(3, '0');
-        //Math.floor(Math.random() * 900000) + 100000;
         const totalPrice = items.reduce((acc, item) => acc + item.quantity * item.price, 0);
 
         const createInfo = {
@@ -93,7 +91,7 @@ const updateDeliveryStatus = async (req, res, next) => {
         const { orderNumber, deliveryStatus } = req.body;
 
         if (!orderNumber || !deliveryStatus)
-            return next(new AppError(400, '주문번호와 배송 상태 정보를 모두 입력해 주세요.'));
+            return next(new AppError(400, '주문번호와 배송상태 정보를 모두 입력해 주세요.'));
 
         const updatedOrder = await Order.updateOne(
             { 'orderInfo.orderNumber': orderNumber },
@@ -163,10 +161,7 @@ const getCurrentOrder = async (req, res, next) => {
 
         if (!orderNumber) return next(new AppError(400, '주문번호를 입력해 주세요.'));
 
-        const foundOrder = await Order.findOne(
-            { 'orderInfo.orderNumber': orderNumber }
-            // { items: 0 } // 책 정보 제외
-        );
+        const foundOrder = await Order.findOne({ 'orderInfo.orderNumber': orderNumber });
 
         if (!foundOrder) return next(new AppError(400, '현재 주문내역이 존재하지 않습니다.'));
 
@@ -189,7 +184,7 @@ const getMyAllOrders = async (req, res, next) => {
     try {
         const { userId } = req.params;
 
-        // if (!userId) return next(new AppError(400, '유저아이디를 입력해 주세요.'));
+        if (!userId) return next(new AppError(400, '유저아이디를 입력해 주세요.'));
 
         const foundOrders = await Order.find({ userId });
 

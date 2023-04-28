@@ -1,5 +1,8 @@
 const { Product, User } = require('../db/models/index');
 const { AppError } = require('../middlewares/errorHandler');
+// const { formDataImg } = require('../uploads');
+
+const fs = require('fs');
 
 // [사용자] 카테고리 조회 - 카테고리 목록 조회
 const getCategories = async (req, res, next) => {
@@ -122,16 +125,13 @@ const deleteCategory = async (req, res, next) => {
 const createProduct = async (req, res, next) => {
     if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
 
-    // const file = req.file;
-    // if (!file) {
-    //     return res.status(400).json({ message: 'Please upload a file' });
-    // }
-
-
     try {
-        // productId는 서버에서 새로 생성함
-        const { title, author, price, category, introduction, imgUrl, publisher } = req.body;
+        const imgName = `http://www.eladin.store/static/${req.file.filename}`;
 
+        // productId는 서버에서 새로 생성함
+        const { title, author, price, category, introduction, publisher } = req.body;
+
+        // console.log(req.body);
         if (!title || !author || !price || !category || !introduction || !publisher)
             return next(new AppError(400, '책 정보를 모두 입력해 주세요.'));
 
@@ -150,13 +150,13 @@ const createProduct = async (req, res, next) => {
             price,
             category,
             introduction,
-            imgUrl,
+            imgUrl: imgName,
             bestSeller: Math.random() >= 0.5,
             newBook: Math.random() >= 0.5,
             recommend: Math.random() >= 0.5,
             publisher,
         };
-        
+
         const createdProduct = await Product.create(createInfo);
 
         res.status(201).json({ message: '책 추가 성공', data: createdProduct });
@@ -221,7 +221,20 @@ const deleteProduct = async (req, res, next) => {
 
         const foundProduct = await Product.findOne({ productId });
 
-        if (!foundProduct) return next(new AppError(400, '삭제하실 책이 존재하지 않습니다.'));
+        const imgName = foundProduct.imgUrl.split('/')[4];
+
+        // imgName 파일을 찾아서 삭제
+        // 상대경로 오류남 -> 절대경로로 수정
+        const filePath = `/Users/heesankim/Desktop/eliceProject/back-end/src/public/${imgName}`;
+
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error(err);
+            }
+            console.log('File deleted successfully');
+        });
+
+        if (!foundProduct) return next(new AppError(400, '삭제할 책이 존재하지 않습니다.'));
 
         const deletedProduct = await Product.deleteOne({ productId });
 
@@ -363,7 +376,6 @@ const getSearchProducts = async (req, res, next) => {
                 { publisher: { $regex: query, $options: 'i' } },
             ],
         });
-
         res.status(200).json({ message: '책 검색 성공', data: foundBooks });
     } catch (error) {
         console.error(error);

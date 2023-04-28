@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 const { isAccessTokenValid } = require('../middlewares/jwt');
+const { processImage } = require('../middlewares/multer');
 const {
     getCategories,
     createCategory,
@@ -35,8 +36,7 @@ router.delete('/categories/category', isAccessTokenValid, deleteCategory);
 // [관리자] 상품 추가 - 책 정보 등록
 // productId는 서버에서 새로 생성함
 // category는 카테고리 조회 라우터에서 카테고리 리스트 받아서 사용자 선택한 값 보내야함
-
-router.post('/products', isAccessTokenValid, createProduct); // (상품 관리 페이지)
+router.post('/products', isAccessTokenValid, processImage, createProduct); // (상품 관리 페이지)
 
 // [관리자] 상품 수정 - 책 정보 수정
 router.patch('/products/:productId', isAccessTokenValid, updateProduct); // (상품 관리 페이지)
@@ -59,8 +59,8 @@ router.get('/products/new-books', isAccessTokenValid, getProductsByNewBook);
 // [사용자] 상품 목록 - 추천도서 책 목록 조회
 router.get('/products/recommended-books', isAccessTokenValid, getProductsByRecommended);
 
-// [사용자] 상품 상세 - 선택한 책의 상세정보 조회
-router.get('/products/:productId', isAccessTokenValid, getProductByProductId); // (책 상세 페이지)
+// [사용자] 상품 상세 - 선택한 책의 상세정보 조회(책 상세 페이지)
+router.get('/products/:productId', isAccessTokenValid, getProductByProductId);
 
 // [사용자] 상품 조회 - 검색어 관련 조회
 router.get('/search', isAccessTokenValid, getSearchProducts);
