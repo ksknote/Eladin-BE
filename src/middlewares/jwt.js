@@ -11,19 +11,14 @@ const isAccessTokenValid = async (req, res, next) => {
 
     if (req.method === 'GET' && !accessToken && !uuid) {
         // 그냥 방문자인 경우
-        console.log('나 지금 방문자임');
         return next();
     }
-
-    console.log('나 지금 회원임 (1) >> ', accessToken);
-    console.log('나 지금 비회원임 (1) >> ', uuid);
 
     if (!accessToken && !uuid)
         // 토큰도 없고 uuid도 없으면, 내가 회원인데 토큰이 없는경우임 >> 에러
         return res.status(401).json({ message: 'Access denied. Please provide a valid token.' });
 
     if (accessToken && !uuid) {
-        console.log('나 지금 회원임 (2) >> ', accessToken);
         // 회원 : 토큰은 있는데 uuid는 없음
         try {
             req.user = await jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
@@ -71,7 +66,6 @@ const isAccessTokenValid = async (req, res, next) => {
         }
     } else if (!accessToken && uuid) {
         // 비회원 : 토큰은 없는데 uuid는 있음
-        console.log('나 지금 비회원임 (2) >> ', uuid);
         try {
             req.uuid = uuid;
             next();
