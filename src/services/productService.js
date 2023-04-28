@@ -241,6 +241,19 @@ const deleteProduct = async (req, res, next) => {
 
         const foundProduct = await Product.findOne({ productId });
 
+        const imgName = foundProduct.imgUrl.split('/')[4];
+        // imgName 파일을 찾아서 삭제!!
+        const filePath = `/Users/heesankim/Desktop/eliceProject/back-end/src/public/${imgName}`;
+
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error(err);
+                // return;
+            }
+
+            console.log('File deleted successfully');
+        });
+
         if (!foundProduct) return next(new AppError(400, '삭제하실 책이 존재하지 않습니다.'));
 
         const deletedProduct = await Product.deleteOne({ productId });
