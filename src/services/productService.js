@@ -1,5 +1,6 @@
 const { Product, User } = require('../db/models/index');
 const { AppError } = require('../middlewares/errorHandler');
+// const { formDataImg } = require('../uploads');
 
 // [사용자] 카테고리 조회 - 카테고리 목록 조회
 const getCategories = async (req, res, next) => {
@@ -121,17 +122,24 @@ const deleteCategory = async (req, res, next) => {
 // [관리자] 상품 추가 - 책 정보 추가
 const createProduct = async (req, res, next) => {
     if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    // console.log(req.file.filename);
+
+    const imgName = `../../back-end/src/uploads/${req.file.filename}`;
+    // const imgName = `C:/Users/지원/Desktop/back-end/src/uploads/${req.file.filename}`;
+
+    // const imgName = `..\\..\\..\\back-end\\src\\uploads\\${req.file.filename}`;
 
     // const file = req.file;
     // if (!file) {
     //     return res.status(400).json({ message: 'Please upload a file' });
     // }
 
-
     try {
         // productId는 서버에서 새로 생성함
-        const { title, author, price, category, introduction, imgUrl, publisher } = req.body;
+        const { title, author, price, category, introduction, publisher } = req.body;
 
+        // console.log(req.body);
         if (!title || !author || !price || !category || !introduction || !publisher)
             return next(new AppError(400, '책 정보를 모두 입력해 주세요.'));
 
@@ -150,13 +158,13 @@ const createProduct = async (req, res, next) => {
             price,
             category,
             introduction,
-            imgUrl,
+            imgUrl: imgName,
             bestSeller: Math.random() >= 0.5,
             newBook: Math.random() >= 0.5,
             recommend: Math.random() >= 0.5,
             publisher,
         };
-        
+
         const createdProduct = await Product.create(createInfo);
 
         res.status(201).json({ message: '책 추가 성공', data: createdProduct });

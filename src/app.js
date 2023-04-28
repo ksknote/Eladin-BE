@@ -40,16 +40,16 @@ if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
-});
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, 'uploads/');
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, Date.now() + path.extname(file.originalname));
+//     },
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -80,9 +80,9 @@ connectToDatabase()
 // app.use(express.static());
 
 // Route for handling image uploads
-app.post('/upload', upload.single('img'), (req, res) => {
-    res.status(200).json({ message: 'Image uploaded successfully!' });
-});
+// app.post('/upload', upload.single('img'), (req, res) => {
+//     res.status(200).json({ message: 'Image uploaded successfully!' });
+// });
 app.use('/auth', authRouter);
 app.use('/orders', orderRouter);
 app.use('/books', productRouter);
