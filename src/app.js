@@ -18,13 +18,14 @@ const allowedOrigins = [
     'http://127.0.0.1:5501',
     'http://localhost:5501',
     'http://localhost:5502',
-    'http://localhost:5500',
+    'http://www.eladin.store',
     'http://localhost:3000',
     'http://localhost:3002',
     'http://localhost:8080',
     'http://localhost:3001',
     'http://localhost:3002',
     'http://34.64.105.163',
+    'http://34.64.105.163:80',
     'http://www.eladin.store',
 ];
 
@@ -32,6 +33,14 @@ const corsOptions = {
     origin: allowedOrigins,
     credentials: true, // 쿠키를 허용하기 위한 설정
 };
+
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -58,6 +67,7 @@ connectToDatabase()
         process.exit(1);
     });
 
+app.use('/static', express.static('public')); // 정적파일 관리 경로
 app.use('/auth', authRouter);
 app.use('/orders', orderRouter);
 app.use('/books', productRouter);

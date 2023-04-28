@@ -3,13 +3,14 @@ const { Schema } = require('mongoose');
 // [각 주문 정보]
 const orderItemSchema = new Schema({
     productId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Product',
+        type: Number,
+        // ref: 'Product',
         required: true,
     },
     quantity: {
         type: Number,
         required: true,
+        default: 1,
     },
     // 책 가격(API에 할인 가격이랑 원가랑 나눠져있음)
     price: {
@@ -22,15 +23,20 @@ const orderItemSchema = new Schema({
 const orderSchema = new Schema(
     {
         userId: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-            required: true,
+            type: String,
+            // ref: 'User',
+            required: false,
+        },
+        uuid: {
+            type: String,
+            required: false,
         },
         items: [orderItemSchema],
         orderInfo: {
             // 주문 번호
             orderNumber: {
-                type: String,
+                type: Number,
+                unique: true,
                 required: true,
             },
             // 주문 총액
@@ -49,7 +55,8 @@ const orderSchema = new Schema(
             receiverPhone: {
                 type: String,
                 required: true,
-                match: [/^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/, '유효하지 않은 전화번호입니다.'],
+                match: [/^01[016789]-\d{3,4}-\d{4}$/, '유효하지 않은 전화번호입니다.'],
+                // match: [/^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/, '유효하지 않은 전화번호입니다.'],
             },
             // 수령자 주소
             address: {
@@ -74,8 +81,8 @@ const orderSchema = new Schema(
         // 배송 상태
         deliveryStatus: {
             type: String,
-            enum: ['pending', 'processing', 'delivered'],
-            default: 'pending',
+            enum: ['배송 준비 중', '배송 중', '배송 완료^^'],
+            default: '배송 준비 중',
         },
     },
     {
