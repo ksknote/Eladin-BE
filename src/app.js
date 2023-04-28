@@ -50,7 +50,7 @@ if (!fs.existsSync('uploads')) {
 // });
 
 // const upload = multer({ storage: storage });
-
+app.use('/static', express.static('public'));
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

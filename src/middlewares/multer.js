@@ -3,19 +3,19 @@ const path = require('path');
 const fs = require('fs');
 const { AppError } = require('./errorHandler');
 
-if (!fs.existsSync('uploads')) {
-    fs.mkdirSync('uploads');
+if (!fs.existsSync('public')) {
+    fs.mkdirSync('public');
 }
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, 'public/');
     },
     // filename: (req, file, cb) => {
     //     cb(null, Date.now() + path.extname(file.originalname));
     // },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
+        cb(null, file.originalname);
     },
 });
 

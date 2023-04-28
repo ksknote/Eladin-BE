@@ -2,6 +2,8 @@ const { Product, User } = require('../db/models/index');
 const { AppError } = require('../middlewares/errorHandler');
 // const { formDataImg } = require('../uploads');
 
+const fs = require('fs');
+
 // [사용자] 카테고리 조회 - 카테고리 목록 조회
 const getCategories = async (req, res, next) => {
     try {
@@ -122,10 +124,20 @@ const deleteCategory = async (req, res, next) => {
 // [관리자] 상품 추가 - 책 정보 추가
 const createProduct = async (req, res, next) => {
     if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
+
+    // 이미지 파일 읽기
+
+    // base64로 변환
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
     // console.log(req.file.filename);
 
-    const imgName = `../../back-end/src/uploads/${req.file.filename}`;
+    // const imgName = `../../../back-end/src/uploads/${req.file.filename}`;
+
+    // const imageData = fs.readFileSync(`../uploads/'`);
+
+    // const base64Image = imageData.toString('base64');
+
+    const imgName = `http://localhost:5500/static/${req.file.filename}`;
     // const imgName = `C:/Users/지원/Desktop/back-end/src/uploads/${req.file.filename}`;
 
     // const imgName = `..\\..\\..\\back-end\\src\\uploads\\${req.file.filename}`;
