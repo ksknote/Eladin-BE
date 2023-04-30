@@ -61,7 +61,7 @@
 
 ## Infra
 
-<div align="middle"> <img alt="infra" src="./src/img/infra.png" width=900> </div><br>
+<div align="middle"> <img alt="infra" src="./src/public/infra.png" width=900> </div><br>
 
 <br/>
 
@@ -87,13 +87,13 @@
 - animate.css
 - swiper.js
 - 카카오(다음) 주소 API
-<br>
+
 - :dog: 안동현
-  - 페이지 레이아웃, 회원가입 유효성 검사, 로그인, 검색 기능 등
+    - 페이지 레이아웃, 회원가입 유효성 검사, 로그인, 검색 기능 등
 - :cat: 권성경
-  - 페이지 레이아웃, 모달 창, DAUM 주소 api, 회원가입 유효성 검사 등 
+    - 페이지 레이아웃, 모달 창, DAUM 주소 api, 회원가입 유효성 검사 등 
 - :mouse: 박정민
-  - 페이지 레이아웃, 장바구니(Indexed DB) 등
+    - 페이지 레이아웃, 장바구니(Indexed DB) 등
 
 ### 백엔드
 
