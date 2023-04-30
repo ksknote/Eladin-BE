@@ -126,7 +126,7 @@ const createProduct = async (req, res, next) => {
     if (req.user.role !== 'admin') return next(new AppError(403, '접근 권한이 없습니다.'));
 
     try {
-        const imgName = `http://www.eladin.store/static/${req.file.filename}`;
+        const imgName = `https://www.eladin.store/static/${req.file.filename}`;
 
         // productId는 서버에서 새로 생성함
         const { title, author, price, category, introduction, publisher } = req.body;
