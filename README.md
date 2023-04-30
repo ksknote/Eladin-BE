@@ -37,10 +37,9 @@
 
 ## 데모 사이트
 
--  백엔드 분들 오면은.
+- https://www.eladin.store
 
 ## API 설계 문서
-백엔드 분들 오면은.
 - 
 
 ## 기술 스택
@@ -104,7 +103,7 @@
 - bcrypt
 - mongoose
 - multer
-<br>
+
 - :tiger: 박지원
     - Dummy Data 수집 -kakao 도서검색 API 구현
     - 유저,상품,주문 스키마 작성 및 모델 구현
@@ -119,13 +118,7 @@
     - 이미지 업로드 미들웨어 구현
     - VM 배포,Nginx 라우팅,도메인 연결
 
-<!-- ### 폴더 구조
-이거 어떻게적어야되징...
-- 프론트: `src/pages` 폴더
-- 백: `src/pages` 이외 폴더 전체
-- 실행: **프론트, 백 동시에, express로 실행**
--->
-<br>
+
 ### Collaboration Tools
 
 - Notion : 수정이 빈번하고 같이 수정해야하는 것, API 명세
