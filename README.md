@@ -148,7 +148,7 @@
 
 -   GCP에서 VM 인스턴스를 생성
 -   Nginx를 설치하고, 설정하여 웹 서버로 활용
--   Gabia Domain, Goole Domain을 구입하여, DNS 설정을 통해 도메인과 VM 인스턴스를 연결
+-   Gabia Domain, Google Domain을 구입하여, DNS 설정을 통해 도메인과 VM 인스턴스를 연결
 -   Let's Encrypt에서 무료 SSL 인증서를 발급받아 Nginx 웹 서버에 적용하여 HTTPS 프로토콜을 지원하도록 설정
 
 ### 실행 방법
