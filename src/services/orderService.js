@@ -1,8 +1,9 @@
 const { Order } = require('../db/models/index');
 const { Product } = require('../db/models/index');
 const { User } = require('../db/models/index');
-const { index } = require('../db/schemas/userSchema');
 const { AppError } = require('../middlewares/errorHandler');
+const bcrypt = require('bcrypt');
+const { index } = require('../db/schemas/userSchema');
 const { ObjectId } = require('mongoose');
 
 // [사용자] 주문 추가 - 추가할 때 마다 새로운 주문번호 생성
@@ -254,6 +255,52 @@ const getMyAllOrdersForNonMember = async (req, res, next) => {
     }
 };
 
+// [비회원] 주문 조회 - 메이페이지에서 개인 주문내역 조회
+const getMyAllOrdersForGuest = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) return next(new AppError(400, '모든 정보를 입력해 주세요.'));
+
+        const foundUser = await User.findOne({ email });
+        if (!foundUser) return next(new AppError(400, '존재하지 않는 이메일입니다.'));
+
+        const isMatch = await bcrypt.compare(password, foundUser.password);
+        if (!isMatch) return next(new AppError(400, '비밀번호가 일치하지 않습니다.'));
+
+        const foundUUID = foundUser.uuid;
+
+        const foundOrders = await Order.find({ uuid: foundUUID });
+
+        if (!foundOrders)
+            return next(new AppError(400, '비회원 개인 주문내역이 존재하지 않습니다.'));
+
+        const titleList = [],
+            imgUrlList = [];
+
+        for (let order of foundOrders) {
+            const productIds = order.items.map((item) => item.productId);
+            const products = await Product.find(
+                { productId: { $in: productIds } },
+                { title: 1, imgUrl: 1 }
+            );
+            const titles = products.map((product) => product.title);
+            const imgUrls = products.map((product) => product.imgUrl);
+
+            titleList.push(titles);
+            imgUrlList.push(imgUrls);
+        }
+
+        res.status(200).json({
+            message: '비회원 개인 주문내역 조회 성공',
+            data: { foundOrders, titleList, imgUrlList, userName: foundUser.userName },
+        });
+    } catch (error) {
+        console.log(error);
+        next(new AppError(500, '[개인 주문내역 조회] 서버 에러'));
+    }
+};
+
 // [관리자] 주문 조회 - 전체 주문내역 조회
 const getAllOrders = async (req, res, next) => {
     console.log('전체주문내역 조회 요청들어옴');
@@ -361,6 +408,7 @@ module.exports = {
     updateDeliveryInfo,
     getMyAllOrders,
     getMyAllOrdersForNonMember,
+    getMyAllOrdersForGuest,
     getAllOrders,
     cancelOrder,
     deleteOrder,

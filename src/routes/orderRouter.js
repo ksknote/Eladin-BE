@@ -9,6 +9,7 @@ const {
     updateDeliveryInfo,
     getMyAllOrders,
     getMyAllOrdersForNonMember,
+    getMyAllOrdersForGuest,
     getAllOrders,
     cancelOrder,
     deleteOrder,
@@ -32,6 +33,9 @@ router.get('/user/:userId', isAccessTokenValid, getMyAllOrders); // (주문내�
 
 // [비회원] 주문 조회 - 개인 주문내역 조회
 router.get('/nonmember/:uuid', isAccessTokenValid, getMyAllOrdersForNonMember);
+
+// [비회원] 주문 조회 - 메이페이지에서 개인 주문내역 조회
+router.post('/guest', getMyAllOrdersForGuest);
 
 // [관리자] 주문 조회 - 전체 주문내역 조회
 router.get('/admin', isAccessTokenValid, getAllOrders); // (관리 페이지)
