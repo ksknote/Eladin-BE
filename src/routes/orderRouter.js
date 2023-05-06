@@ -25,7 +25,7 @@ router.post('/nonmember', isAccessTokenValid, createOrderForNonMember);
 // [관리자] 주문 수정 - 배송상태 수정
 router.patch('/admin', isAccessTokenValid, updateDeliveryStatus); // (관리 페이지)
 
-// [사용자] 주문 수정 - 배송 시작 전까지 주문내역, 배송지정보 수정
+// [사용자] 주문 수정 - 배송 시작 전까지 배송지정보 수정
 router.patch('/user', isAccessTokenValid, updateDeliveryInfo); // (주문내역 수정 페이지)
 
 // [사용자] 주문 조회 - 개인 주문내역 조회
@@ -40,7 +40,7 @@ router.post('/guest', getMyAllOrdersForGuest);
 // [관리자] 주문 조회 - 전체 주문내역 조회
 router.get('/admin', isAccessTokenValid, getAllOrders); // (관리 페이지)
 
-// [사용자] 주문 취소 - 사용자 주문 취소
+// [사용자] 주문 취소 - 사용자 배송 시작 전까지 주문 취소
 router.delete('/user', isAccessTokenValid, cancelOrder); // (주문내역 페이지)
 
 // [관리자] 주문 삭제 - 관리자 주문 삭제

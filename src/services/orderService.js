@@ -109,12 +109,12 @@ const updateDeliveryStatus = async (req, res, next) => {
     }
 };
 
-// [사용자] 주문 수정 - 배송 시작 전까지 주문내역, 배송지정보 수정
+// [사용자] 주문 수정 - 배송 시작 전까지 배송지정보 수정
 const updateDeliveryInfo = async (req, res, next) => {
     try {
-        const { orderNumber, items, deliveryInfo } = req.body;
+        const { orderNumber, deliveryInfo } = req.body;
 
-        if (!orderNumber || !items || !deliveryInfo)
+        if (!orderNumber || !deliveryInfo)
             return next(new AppError(400, '수정 정보를 모두 입력해 주세요.'));
 
         const foundOrder = await Order.findOne({ 'orderInfo.orderNumber': orderNumber });
@@ -129,7 +129,6 @@ const updateDeliveryInfo = async (req, res, next) => {
             Math.floor(Math.random() * 1000)
                 .toString()
                 .padStart(3, '0');
-        const newTotalPrice = items.reduce((acc, item) => acc + item.quantity * item.price, 0);
 
         if (foundOrder.deliveryStatus === '배송 중' || foundOrder.deliveryStatus === '배송 완료^^')
             return next(new AppError(400, '배송이 시작되어 수정하실 수 없습니다.'));
@@ -138,11 +137,10 @@ const updateDeliveryInfo = async (req, res, next) => {
             const updatedOrder = await Order.updateOne(
                 { 'orderInfo.orderNumber': orderNumber },
                 {
-                    items, // 주문한 책 정보 수정
                     deliveryInfo, // 배송지 정보 수정
                     orderInfo: {
                         orderNumber: newOrderNumber,
-                        totalPrice: newTotalPrice,
+                        totalPrice: foundOrder.orderInfo.totalPrice,
                     },
                 },
                 { new: true }
