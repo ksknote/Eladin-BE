@@ -137,7 +137,14 @@ const updateDeliveryInfo = async (req, res, next) => {
             const updatedOrder = await Order.updateOne(
                 { 'orderInfo.orderNumber': orderNumber },
                 {
-                    deliveryInfo, // 배송지 정보 수정
+                    deliveryInfo: {
+                        receiverName: deliveryInfo.receiverName,
+                        receiverPhone: deliveryInfo.receiverPhone,
+                        address: deliveryInfo.address,
+                        addressDetail: deliveryInfo.addressDetail,
+                        postCode: deliveryInfo.postCode,
+                        deliveryMessage: foundOrder.deliveryInfo.deliveryMessage,
+                    }, // 배송지 정보 수정
                     orderInfo: {
                         orderNumber: newOrderNumber,
                         totalPrice: foundOrder.orderInfo.totalPrice,
