@@ -112,10 +112,17 @@ const updateDeliveryStatus = async (req, res, next) => {
 // [사용자] 주문 수정 - 배송 시작 전까지 주문내역, 배송지정보 수정
 const updateDeliveryInfo = async (req, res, next) => {
     try {
-        const { orderNumber, items, deliveryInfo, deliveryStatus } = req.body;
+        const { orderNumber, items, deliveryInfo } = req.body;
 
-        if (!orderNumber || !items || !deliveryInfo || !deliveryStatus)
+        if (!orderNumber || !items || !deliveryInfo)
             return next(new AppError(400, '수정 정보를 모두 입력해 주세요.'));
+
+        const foundOrder = await Order.findOne({ 'orderInfo.orderNumber': orderNumber });
+
+        if (!foundOrder)
+            return next(
+                new AppError(400, '주문번호가 변경되었거나, 관리자에 의해 삭제된 주문입니다.')
+            );
 
         const newOrderNumber =
             Date.now().toString().slice(-9) +
@@ -124,7 +131,10 @@ const updateDeliveryInfo = async (req, res, next) => {
                 .padStart(3, '0');
         const newTotalPrice = items.reduce((acc, item) => acc + item.quantity * item.price, 0);
 
-        if (deliveryStatus === '배송 준비 중' || deliveryStatus === '배송 완료^^') {
+        if (foundOrder.deliveryStatus === '배송 중' || foundOrder.deliveryStatus === '배송 완료^^')
+            return next(new AppError(400, '배송이 시작되어 수정하실 수 없습니다.'));
+
+        if (foundOrder.deliveryStatus === '배송 준비 중') {
             const updatedOrder = await Order.updateOne(
                 { 'orderInfo.orderNumber': orderNumber },
                 {
@@ -356,17 +366,16 @@ const cancelOrder = async (req, res, next) => {
                 new AppError(400, '주문번호가 변경되었거나, 관리자에 의해 삭제된 주문입니다.')
             );
 
-        if (
-            foundOrder.deliveryStatus !== '배송 준비 중' ||
-            foundOrder.deliveryStatus === '배송 완료^^'
-        )
+        if (foundOrder.deliveryStatus === '배송 중' || foundOrder.deliveryStatus === '배송 완료^^')
             return next(new AppError(400, '배송이 시작되어 취소하실 수 없습니다.'));
 
-        const canceledOrder = await foundOrder.deleteOne({
-            'orderInfo.orderNumber': orderNumber,
-        });
+        if (foundOrder.deliveryStatus === '배송 준비 중') {
+            const canceledOrder = await foundOrder.deleteOne({
+                'orderInfo.orderNumber': orderNumber,
+            });
 
-        res.status(200).json({ message: '주문 취소 성공', data: canceledOrder });
+            res.status(200).json({ message: '주문 취소 성공', data: canceledOrder });
+        }
     } catch (error) {
         console.log(error);
         next(new AppError(500, '[사용자 주문 취소]서버 에러'));
